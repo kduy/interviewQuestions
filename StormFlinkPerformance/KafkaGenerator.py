@@ -4,6 +4,7 @@ from kafka.client import KafkaClient
 from kafka.producer import SimpleProducer, KeyedProducer
 from random import randint
 import uuid, io, json, argparse
+import logging
 
 
 parser = argparse.ArgumentParser(description='Push Avro messages into Kafka')
@@ -23,6 +24,10 @@ kafkaConnect = args["k"]
 topic        = args["t"]
 quiet        = args["q"]
 
+logging.basicConfig(
+    format='%(asctime)s.%(msecs)s:%(name)s:%(thread)d:%(levelname)s:%(process)d:%(message)s',
+    level=logging.DEBUG
+)
 
 schema = avro.schema.parse(json.dumps({
     'name': 'kafkatest',
