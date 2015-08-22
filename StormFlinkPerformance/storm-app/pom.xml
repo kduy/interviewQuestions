@@ -32,6 +32,16 @@
             <version>3.0</version>
         </dependency>
         <dependency>
+			<groupId>org.apache.avro</groupId>
+			<artifactId>avro-tools</artifactId>
+			<version>1.7.7</version>
+		</dependency>
+		<dependency>
+			<groupId>org.xerial.snappy</groupId>
+			<artifactId>snappy-java</artifactId>
+			<version>1.1.1.7</version>
+		</dependency>
+        <dependency>
             <groupId>commons-collections</groupId>
             <artifactId>commons-collections</artifactId>
             <version>3.2.1</version>
@@ -49,6 +59,14 @@
 	                <encoding>UTF-8</encoding>
 	            </configuration>
 	        </plugin>
+	        <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-eclipse-plugin</artifactId>
+                <configuration>
+                    <downloadSources>true</downloadSources>
+                    <downloadJavadocs>true</downloadJavadocs>
+                </configuration>
+            </plugin>
 		    <plugin>
 		    	<artifactId>maven-assembly-plugin</artifactId>
 		    	<configuration>
