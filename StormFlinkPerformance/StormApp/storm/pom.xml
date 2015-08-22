@@ -65,7 +65,9 @@
 		    		<execution>
 		    			<id>make-assembly</id>
 			    		<phase>package</phase>
-			    		<goal>single</goal>
+			    		<goals>
+			    			<goal>single</goal>
+			    		</goals>
 		    		</execution>
 		    	</executions>
 		    </plugin>
