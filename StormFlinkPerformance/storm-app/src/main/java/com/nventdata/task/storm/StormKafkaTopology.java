@@ -13,7 +13,6 @@ import org.apache.avro.io.BinaryDecoder;
 import org.apache.avro.io.DatumReader;
 import org.apache.avro.io.Decoder;
 import org.apache.avro.io.DecoderFactory;
-import org.jboss.netty.handler.codec.embedder.DecoderEmbedder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,10 +77,7 @@ public class StormKafkaTopology {
 				topologyProperties.getStormConfig().put(KafkaBolt.KAFKA_BROKER_PROPERTIES,props);
 	            config.put(KafkaBolt.KAFKA_BROKER_PROPERTIES, props);
 	            cluster.submitTopology(topologyProperties.getTopologyName(), topologyProperties.getStormConfig(), stormTopology);
-	            /*Thread.sleep(topologyProperties.getLocalTimeExecution());
-				cluster.killTopology(topologyProperties.getTopologyName());
-				cluster.shutdown();
-				System.exit(0);*/
+	            
 		}	
 	}
 	
@@ -97,6 +93,8 @@ public class StormKafkaTopology {
 		BrokerHosts kafkaBrokerHosts = new ZkHosts(topologyProperties.getZookeeperHosts());
 		String kafkaTopic = topologyProperties.getKafkaTopic();
 		SpoutConfig kafkaConfig = new SpoutConfig(kafkaBrokerHosts, kafkaTopic, "", kafkaTopic);
+		kafkaConfig.startOffsetTime = kafka.api.OffsetRequest.LatestTime();
+		kafkaConfig.forceFromStart = topologyProperties.isKafkaStartFromBeginning();
 		kafkaConfig.scheme = new SchemeAsMultiScheme(new StringScheme());
 		TopologyBuilder builder = new TopologyBuilder();
 
@@ -126,14 +124,14 @@ public class StormKafkaTopology {
 
         @Override
         public void execute(Tuple tuple, BasicOutputCollector collector) {
-        	
-        	collector.emit(new Values("word",tuple.getStringByField("name")));
+        	collector.emit(new Values("word",tuple.getIntegerByField("name").toString()));
         }
     }
 	
 	public static class KeyExtractor extends BaseRichBolt{
 		OutputCollector _collector;
 		Schema _schema;
+		int offset;
 		
 
 		@Override
@@ -145,6 +143,7 @@ public class StormKafkaTopology {
 		public void prepare(Map stormConf, TopologyContext context,
 				OutputCollector collector) {
 			_collector = collector;
+			offset = 0;
 			try {
 				_schema = new Schema.Parser().parse(new File ("src/main/resources/message.avsc"));
 			} catch (IOException e) {
@@ -155,31 +154,42 @@ public class StormKafkaTopology {
 		@Override
 		public void execute(Tuple input) {
 			// TODO convert avro to json
-			Message message = new Message((byte[])((TupleImpl) input).get("bytes"));
-			System.out.println(message.toString()+ "------------");
-			
+			Message message = new Message((byte[]) ((TupleImpl) input).get("str").toString().getBytes());
+						
             ByteBuffer bb = message.payload();
-
-            if (bb == null)
-            	System.exit(1);
-            byte[] avroMessage = new byte[bb.remaining()];
-            bb.get(avroMessage, 0, avroMessage.length);
+            System.out.println("payload: "+ bb.capacity() );
+            System.out.println("offset: "+ offset );
+            System.out.println("Bytebuffer: "+ bb);
+            System.out.println("message size: "+ message.size());
+            System.out.println("message: "+ ((TupleImpl) input).get("str").toString());
+            System.out.println("---------------");
             
+            
+            /*int sizeOfMessage = Math.abs(bb.capacity() - offset);
+            byte[] avroMessage = new byte[sizeOfMessage];
+            bb.position(Math.min(bb.capacity(), offset));
+            bb.get(avroMessage, 0, avroMessage.length);
+            offset = Math.min(bb.capacity(), offset)+ avroMessage.length;
+			*/
+//            String originalString = ((TupleImpl)input).get("str").toString();
+//            byte[] avroMessage = originalString.substring(offset).getBytes();
+//            offset = originalString.length();
+            
+            byte[] avroMessage = new byte[23];
+            bb.position(bb.capacity()-23);
+            bb.get(avroMessage, 0, avroMessage.length);
+			
 			try {
 				DatumReader<GenericRecord> reader = new GenericDatumReader<GenericRecord>(_schema);
 				Decoder decoder = DecoderFactory.get().binaryDecoder(avroMessage, null);
 	            GenericRecord result = reader.read(null, decoder);
-	            System.out.println(result.get("random")+"--------------------");
-				_collector.emit(new Values(result.get("random")));
+	            System.out.println(result.toString());
+	            _collector.emit(new Values(result.get("random")));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-
+			
             _collector.ack(input);
-			// TODO get data at "random"
-			
-			// emit
-			
 		}
 		
 		
