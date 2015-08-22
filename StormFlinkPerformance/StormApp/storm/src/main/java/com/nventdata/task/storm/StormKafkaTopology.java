@@ -59,10 +59,10 @@ public class StormKafkaTopology {
 				topologyProperties.getStormConfig().put(KafkaBolt.KAFKA_BROKER_PROPERTIES,props);
 	            config.put(KafkaBolt.KAFKA_BROKER_PROPERTIES, props);
 	            cluster.submitTopology(topologyProperties.getTopologyName(), topologyProperties.getStormConfig(), stormTopology);
-				Thread.sleep(topologyProperties.getLocalTimeExecution());
+	            /*Thread.sleep(topologyProperties.getLocalTimeExecution());
 				cluster.killTopology(topologyProperties.getTopologyName());
 				cluster.shutdown();
-				System.exit(0);
+				System.exit(0);*/
 		}	
 	}
 	
