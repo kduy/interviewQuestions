@@ -1,8 +1,5 @@
-com/nventdata/task/flink/KafkaProducerExample$1.class
-com/nventdata/task/flink/MySimpleStringSchema.class
-com/nventdata/task/flink/WordCount$LineSplitter.class
-com/nventdata/task/flink/KafkaProducerExample.class
-com/nventdata/task/flink/SocketTextStreamWordCount.class
 com/nventdata/task/flink/Main.class
-com/nventdata/task/flink/SocketTextStreamWordCount$LineSplitter.class
-com/nventdata/task/flink/WordCount.class
+com/nventdata/task/flink/MySimpleStringSchema.class
+com/nventdata/task/flink/Main$avroDecodingMap.class
+com/nventdata/task/flink/Main$2.class
+com/nventdata/task/flink/Main$1.class

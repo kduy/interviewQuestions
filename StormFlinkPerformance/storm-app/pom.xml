@@ -85,7 +85,8 @@
 		    		</descriptorRefs>
 		    		<archive>
 		    			<manifest>
-		    				<mainClass></mainClass>
+		    				<addClasspath>true</addClasspath>
+		    				<mainClass>com.nventdata.task.storm.StormKafkaTopology</mainClass>
 		    			</manifest>
 		    		</archive>
 		    	</configuration>
