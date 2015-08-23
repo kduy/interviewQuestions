@@ -27,7 +27,6 @@ public class KafkaProducerExample {
 
 	public static void main(String[] args) throws Exception {
 		
-
 		final String host = "localhost";
 		final int port = 2181;
 		final String topic = "neverwinter";
@@ -52,11 +51,10 @@ public class KafkaProducerExample {
 			public void cancel() {
 				running = false;
 			}
-
-
 		})
 			.addSink(new KafkaSink<String>(host + ":" + port, topic, new JavaDefaultStringSchema()));
 
 		env.execute();
 	}
 }
+
