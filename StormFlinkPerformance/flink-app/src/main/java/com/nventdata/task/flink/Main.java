@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package com.nventdata.task.flink;
+package org.apache.flink.streaming.connectors.kafka.flink;
 
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericDatumReader;
@@ -29,7 +29,9 @@ import org.apache.flink.api.common.typeinfo.BasicTypeInfo;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.java.operators.Keys;
 import org.apache.flink.api.java.tuple.Tuple2;
+import org.apache.flink.streaming.api.collector.selector.OutputSelector;
 import org.apache.flink.streaming.api.datastream.DataStream;
+import org.apache.flink.streaming.api.datastream.SplitDataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.connectors.kafka.api.KafkaSource;
 import org.apache.flink.streaming.util.serialization.DeserializationSchema;
@@ -39,6 +41,8 @@ import kafka.message.Message;
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Main {
 
@@ -59,8 +63,49 @@ public class Main {
 
 		//kafkaStream.print();
         
-        kafkaStream.map(new avroDecodingMap()).print();
+        //kafkaStream.map(new avroDecodingMap()).print();
 
+        SplitDataStream<String> splitStream = kafkaStream.split(new OutputSelector<String>() {
+            @Override
+            public Iterable<String> select(String value) {
+                List<String> outputs = new ArrayList<String>();
+
+                Message message = new Message(value.getBytes());
+
+                ByteBuffer bb = message.payload();
+
+                byte[] avroMessage = new byte[23];
+                bb.position(bb.capacity()-23);
+                bb.get(avroMessage, 0, avroMessage.length);
+
+                try {
+                    Schema _schema = new Schema.Parser().parse(new File("/tmp/message.avsc"));
+                    DatumReader<GenericRecord> reader = new GenericDatumReader<GenericRecord>(_schema);
+                    Decoder decoder = DecoderFactory.get().binaryDecoder(avroMessage, null);
+                    GenericRecord result = reader.read(null, decoder);
+                    //return new Tuple2<Integer, String>(Integer.parseInt(result.get("random").toString()), Hex.encodeHexString(avroMessage)) ;
+                    int randomValue = (Integer)result.get("random");
+                    switch (randomValue){
+                        case 1:
+                            outputs.add("random1");
+                            break;
+                        case 2:
+                            outputs.add("randome2");
+                            break;
+                        case 3:
+                            outputs.add("random3");
+                            break;
+                        default:
+                            
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return outputs;
+            }
+        });
+
+        splitStream.select("random1").print();
 		env.execute();
 	}
 
