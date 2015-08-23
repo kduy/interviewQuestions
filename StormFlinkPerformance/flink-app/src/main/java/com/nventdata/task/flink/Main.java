@@ -34,8 +34,10 @@ import org.apache.flink.streaming.api.collector.selector.OutputSelector;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.SplitDataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.connectors.kafka.api.KafkaSink;
 import org.apache.flink.streaming.connectors.kafka.api.KafkaSource;
 import org.apache.flink.streaming.util.serialization.DeserializationSchema;
+import org.apache.flink.streaming.util.serialization.JavaDefaultStringSchema;
 import org.apache.flink.streaming.util.serialization.SerializationSchema;
 import kafka.message.Message;
 
@@ -85,12 +87,24 @@ public class KafkaConsumerExample {
             }
         });
 
-        splitStream.select("random1").print();
-		env.execute();
+        for (int i = 1; i <=3 ; i++){
+            forwardToKafka(splitStream,"random"+i, "random"+i);
+        }
+        env.execute();
 	}
 
+    private static void forwardToKafka(SplitDataStream<Tuple2<Integer, String>> splitStream,String streamName, String topic) {
+        splitStream.select(streamName).map(new MapFunction<Tuple2<Integer, String>, String>() {
+            @Override
+            public String map(Tuple2<Integer, String> value) throws Exception {
+                return value.f1;
+            }
+        })
+                    .addSink(new KafkaSink<String>(host + ":" + port, topic, new JavaDefaultStringSchema()));
+    }
 
-	private static boolean parseParameters(String[] args) {
+
+    private static boolean parseParameters(String[] args) {
 		if (args.length == 3) {
 			host = args[0];
 			port = Integer.parseInt(args[1]);
