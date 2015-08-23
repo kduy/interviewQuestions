@@ -1,0 +1,4 @@
+com/nventdata/task/flink/SocketTextStreamWordCount$LineSplitter.class
+com/nventdata/task/flink/WordCount$LineSplitter.class
+com/nventdata/task/flink/SocketTextStreamWordCount.class
+com/nventdata/task/flink/WordCount.class
