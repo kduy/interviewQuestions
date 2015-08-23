@@ -1,33 +1,39 @@
-FROM UBUNTU:trusty
+FROM ubuntu:trusty
 
 MAINTAINER pablo
 ENV KAFKA_VERSION="0.8.2.1" SCALA_VERSION="2.10"
 
 
-RUN apt-get update && apt-get install -y unzip && rm -rf /var/lib/apt/lists/*
-wget curl git docker.io jq
 
 
 # Default to UTF-8 file.encoding
 ENV LANG C.UTF-8
 
-ENV JAVA_VERSION 7u79
-ENV JAVA_DEBIAN_VERSION 7u79-2.5.6-1~deb8u1
+RUN apt-get update && apt-get install -y unzip openjdk-7-jdk wget curl git docker.io jq
 
-RUN apt-get update && apt-get install -y openjdk-7-jdk="$JAVA_DEBIAN_VERSION" && rm -rf /var/lib/apt/lists/*
 
 # download Kafka
-mirror=$(curl --stderr /dev/null https://www.apache.org/dyn/closer.cgi\?as_json\=1 | sed -rn 's/.*"preferred":.*"(.*)"/\1/p')
-url="${mirror}kafka/${KAFKA_VERSION}/kafka_${SCALA_VERSION}-${KAFKA_VERSION}.tgz"
-wget -q "${url}" -O "/tmp/kafka_${SCALA_VERSION}-${KAFKA_VERSION}.tgz"
 
-
+ADD download-kafka.sh /tmp/download-kafka.sh
+RUN sudo chmod -R 3777 /tmp
+RUN /tmp/download-kafka.sh
 RUN tar xf /tmp/kafka_${SCALA_VERSION}-${KAFKA_VERSION}.tgz -C /opt
 
 
 VOLUME ["/kafka"]
 
+
 ENV KAFKA_HOME /opt/kafka_${SCALA_VERSION}-${KAFKA_VERSION}
 
-CMD "${KAFKA_HOME}/bin/zookeeper-server-start.sh config/zookeeper.properties &"
+RUN $KAFKA_HOME/bin/zookeeper-server-start.sh config/zookeeper.properties &
+RUN $KAFKA_HOME/bin/kafka-server-start.sh $KAFKA_HOME/config/server.properties  &
+
+RUN $KAFKA_HOME/bin/kafka-topics.sh  --zookeeper localhost:2181 --create --topic neverwinter --partition 1 --replication-factor 1
+RUN $KAFKA_HOME/bin/kafka-topics.sh  --zookeeper localhost:2181 --create --topic random1 --partition 1 --replication-factor 1
+RUN $KAFKA_HOME/bin/kafka-topics.sh  --zookeeper localhost:2181 --create --topic random2 --partition 1 --replication-factor 1
+RUN $KAFKA_HOME/bin/kafka-topics.sh  --zookeeper localhost:2181 --create --topic random3 --partition 1 --replication-factor 1
+
+
+RUN $KAFKA_HOME/bin/kafka-console-consumer.sh --zookeeper localhost:2181 --topic neverwinter
+
 
