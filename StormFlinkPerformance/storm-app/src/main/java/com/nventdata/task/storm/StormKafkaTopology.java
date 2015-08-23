@@ -172,16 +172,6 @@ public class StormKafkaTopology {
             System.out.println("---------------");
             
             
-            /*int sizeOfMessage = Math.abs(bb.capacity() - offset);
-            byte[] avroMessage = new byte[sizeOfMessage];
-            bb.position(Math.min(bb.capacity(), offset));
-            bb.get(avroMessage, 0, avroMessage.length);
-            offset = Math.min(bb.capacity(), offset)+ avroMessage.length;
-			*/
-//            String originalString = ((TupleImpl)input).get("str").toString();
-//            byte[] avroMessage = originalString.substring(offset).getBytes();
-//            offset = originalString.length();
-            
             byte[] avroMessage = new byte[23];
             bb.position(bb.capacity()-23);
             bb.get(avroMessage, 0, avroMessage.length);
