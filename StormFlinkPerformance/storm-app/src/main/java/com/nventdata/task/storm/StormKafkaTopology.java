@@ -43,6 +43,7 @@ import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
 import backtype.storm.tuple.Values;
 import kafka.message.Message;
+
 import org.apache.commons.codec.binary.Hex;
 
 
@@ -109,23 +110,31 @@ public class StormKafkaTopology {
 		builder.setBolt("transform", new KeyExtractor()).shuffleGrouping("avro");
 		
 		builder.setBolt("print", new PrinterBolt()).shuffleGrouping("transform");
-		KafkaBolt <String, String> bolt = new KafkaBolt<String, String> ()
-        		.withTopicSelector( new DefaultTopicSelector("storm-word"))
-  				.withTupleToKafkaMapper( new FieldNameBasedTupleToKafkaMapper<String, String>());
-        builder.setBolt("forwardToKafka", bolt).shuffleGrouping("print");
+        builder.setBolt("forwardToKafka1", createKafkaBoltWithTopic("random1")).shuffleGrouping("print", "random1");
+        builder.setBolt("forwardToKafka2", createKafkaBoltWithTopic("random2")).shuffleGrouping("print", "random2");
+        builder.setBolt("forwardToKafka3", createKafkaBoltWithTopic("random3")).shuffleGrouping("print", "random3");
         
 		return builder.createTopology();
+	}
+
+	private KafkaBolt<String, String> createKafkaBoltWithTopic(String kafkaTopic) {
+		return new KafkaBolt<String, String> ()
+        		.withTopicSelector( new DefaultTopicSelector(kafkaTopic))
+  				.withTupleToKafkaMapper( new FieldNameBasedTupleToKafkaMapper<String, String>());
 	}
 	
 	public static class PrinterBolt extends BaseBasicBolt {
         @Override
         public void declareOutputFields(OutputFieldsDeclarer declarer) {
-        	declarer.declare( new Fields("key", "message"));
+//        	declarer.declare( new Fields("key", "message"));
+        	declarer.declareStream("random1", new Fields("random1", "message"));
+        	declarer.declareStream("random2", new Fields("random3", "message"));
+        	declarer.declareStream("random3", new Fields("random3", "message"));
         }
 
         @Override
         public void execute(Tuple tuple, BasicOutputCollector collector) {
-        	collector.emit(new Values(tuple.getStringByField("random"),tuple.getStringByField("message")));
+        	collector.emit (tuple.getStringByField("random"), new Values(tuple.getStringByField("random"),tuple.getStringByField("message")));
         }
     }
 	
