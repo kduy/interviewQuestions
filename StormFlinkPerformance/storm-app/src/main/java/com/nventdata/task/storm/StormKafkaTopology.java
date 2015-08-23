@@ -43,6 +43,7 @@ import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
 import backtype.storm.tuple.Values;
 import kafka.message.Message;
+import org.apache.commons.codec.binary.Hex;
 
 
 public class StormKafkaTopology {
@@ -119,12 +120,12 @@ public class StormKafkaTopology {
 	public static class PrinterBolt extends BaseBasicBolt {
         @Override
         public void declareOutputFields(OutputFieldsDeclarer declarer) {
-        	declarer.declare(new Fields("key", "message"));
+        	declarer.declare( new Fields("key", "message"));
         }
 
         @Override
         public void execute(Tuple tuple, BasicOutputCollector collector) {
-        	collector.emit(new Values("word",tuple.getIntegerByField("name").toString()));
+        	collector.emit(new Values(tuple.getStringByField("random"),tuple.getStringByField("message")));
         }
     }
 	
@@ -136,7 +137,7 @@ public class StormKafkaTopology {
 
 		@Override
 		public void declareOutputFields(OutputFieldsDeclarer declarer) {
-			declarer.declare(new Fields("name"));
+			declarer.declare(new Fields("random", "message"));
 		}
 
 		@Override
@@ -184,16 +185,14 @@ public class StormKafkaTopology {
 				Decoder decoder = DecoderFactory.get().binaryDecoder(avroMessage, null);
 	            GenericRecord result = reader.read(null, decoder);
 	            System.out.println(result.toString());
-	            _collector.emit(new Values(result.get("random")));
+	            _collector.emit(new Values("random"+result.get("random"), Hex.encodeHexString(avroMessage)));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			
             _collector.ack(input);
 		}
-		
-		
 	}
+	
 	
 	public static void main(String[] args) throws Exception {
 		String propertiesFile = args[0];
