@@ -1,4 +1,4 @@
-package com.nventdata.task.storm;
+package com.nventdata.task.storm.utils;
 
 import backtype.storm.Config;
 import backtype.storm.metric.LoggingMetricsConsumer;

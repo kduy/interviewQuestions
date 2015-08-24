@@ -43,7 +43,18 @@ import kafka.message.Message;
 
 import org.apache.commons.codec.binary.Hex;
 
+import com.nventdata.task.storm.bolt.DecodeAvroBolt;
+import com.nventdata.task.storm.bolt.SplitStreamBolt;
+import com.nventdata.task.storm.utils.TopologyProperties;
 
+
+/**
+ * @author pablo
+ * 
+ * The main class to split an avro message stream from kafka source, 
+ * split based on the `random` field then feed the split stream to kafka sink
+ *
+ */
 public class StormKafkaTopology {
 	public static final Logger LOG = LoggerFactory
 			.getLogger(StormKafkaTopology.class);
@@ -54,13 +65,15 @@ public class StormKafkaTopology {
 		this.topologyProperties = topologyProperties;
 	}
 	
+	/**
+	 * submit the built topology with local/cluster mode
+	 * 
+	 * @throws Exception
+	 */
 	public void runTopology() throws Exception{
-
+		
 		StormTopology stormTopology = buildTopology();
 		String stormExecutionMode = topologyProperties.getStormExecutionMode();
-	
-		Config config = new Config();
-        config.put(Config.TOPOLOGY_TRIDENT_BATCH_EMIT_INTERVAL_MILLIS, 2000);
 
 		switch (stormExecutionMode){
 			case ("cluster"):
@@ -69,126 +82,60 @@ public class StormKafkaTopology {
 			case ("local"):
 			default:
 				LocalCluster cluster = new LocalCluster();
+				
 				Properties props = new Properties();
 	            props.put("metadata.broker.list", "localhost:9092");
 	            props.put("request.required.acks", "1");
 	            props.put("serializer.class", "kafka.serializer.StringEncoder");
 				topologyProperties.getStormConfig().put(KafkaBolt.KAFKA_BROKER_PROPERTIES,props);
-	            config.put(KafkaBolt.KAFKA_BROKER_PROPERTIES, props);
-	            cluster.submitTopology(topologyProperties.getTopologyName(), topologyProperties.getStormConfig(), stormTopology);
 	            
+				cluster.submitTopology(topologyProperties.getTopologyName(), topologyProperties.getStormConfig(), stormTopology);
 		}	
 	}
 	
-	private StormTopology buildTopology()
-	{
-		/*
-		BrokerHosts kafkaBrokerHosts = new ZkHosts(topologyProperties.getZookeeperHosts());
-		String kafkaTopic = topologyProperties.getKafkaTopic();
-		SpoutConfig kafkaConfig = new SpoutConfig(kafkaBrokerHosts, kafkaTopic, "/storm/kafka/"+topologyProperties.getTopologyName(), kafkaTopic);
-		kafkaConfig.forceFromStart = topologyProperties.isKafkaStartFromBeginning();
-		*/
 
+	/**
+	 * 	build the topology
+	 * 
+	 * @return
+	 */
+	private StormTopology buildTopology(){
+		// zookeeper 
 		BrokerHosts kafkaBrokerHosts = new ZkHosts(topologyProperties.getZookeeperHosts());
+		
+		// kafka
 		String kafkaTopic = topologyProperties.getKafkaTopic();
+		
 		SpoutConfig kafkaConfig = new SpoutConfig(kafkaBrokerHosts, kafkaTopic, "", kafkaTopic);
 		kafkaConfig.startOffsetTime = kafka.api.OffsetRequest.LatestTime();
 		kafkaConfig.forceFromStart = topologyProperties.isKafkaStartFromBeginning();
 		kafkaConfig.scheme = new SchemeAsMultiScheme(new StringScheme());
+		
+		// build a Storm topology
 		TopologyBuilder builder = new TopologyBuilder();
 
-		/*
-		builder.setSpout("KafkaSpout", new KafkaSpout(kafkaConfig), topologyProperties.getKafkaSpoutParallelism());
-		builder.setBolt("FilterBolt", new FilterMessageBolt(), topologyProperties.getFilterBoltParallelism()).shuffleGrouping("KafkaSpout");
-		builder.setBolt("TCPBolt", new TCPBolt(), topologyProperties.getTcpBoltParallelism()).shuffleGrouping("FilterBolt");
-		*/
 		builder.setSpout("avro", new KafkaSpout(kafkaConfig));//, topologyProperties.getKafkaSpoutParallelism());
-		
-		builder.setBolt("transform", new KeyExtractor()).shuffleGrouping("avro");
-		
-		builder.setBolt("print", new PrinterBolt()).shuffleGrouping("transform");
-        builder.setBolt("forwardToKafka1", createKafkaBoltWithTopic("random1")).shuffleGrouping("print", "random1");
-        builder.setBolt("forwardToKafka2", createKafkaBoltWithTopic("random2")).shuffleGrouping("print", "random2");
-        builder.setBolt("forwardToKafka3", createKafkaBoltWithTopic("random3")).shuffleGrouping("print", "random3");
+		builder.setBolt("decode", new DecodeAvroBolt()).shuffleGrouping("avro");	
+		builder.setBolt("split", new SplitStreamBolt()).shuffleGrouping("decode");
+        
+		builder.setBolt("forwardToKafka1", createKafkaBoltWithTopic("random1")).shuffleGrouping("split", "random1");
+        builder.setBolt("forwardToKafka2", createKafkaBoltWithTopic("random2")).shuffleGrouping("split", "random2");
+        builder.setBolt("forwardToKafka3", createKafkaBoltWithTopic("random3")).shuffleGrouping("split", "random3");
         
 		return builder.createTopology();
 	}
 
+	/**
+	 * create a bold to forward message to Kafka topic
+	 * 
+	 * @param kafkaTopic
+	 * @return
+	 */
 	private KafkaBolt<String, String> createKafkaBoltWithTopic(String kafkaTopic) {
 		return new KafkaBolt<String, String> ()
         		.withTopicSelector( new DefaultTopicSelector(kafkaTopic))
   				.withTupleToKafkaMapper( new FieldNameBasedTupleToKafkaMapper<String, String>());
 	}
-	
-	public static class PrinterBolt extends BaseBasicBolt {
-        @Override
-        public void declareOutputFields(OutputFieldsDeclarer declarer) {
-//        	declarer.declare( new Fields("key", "message"));
-        	declarer.declareStream("random1", new Fields("random1", "message"));
-        	declarer.declareStream("random2", new Fields("random3", "message"));
-        	declarer.declareStream("random3", new Fields("random3", "message"));
-        }
-
-        @Override
-        public void execute(Tuple tuple, BasicOutputCollector collector) {
-        	collector.emit (tuple.getStringByField("random"), new Values(tuple.getStringByField("random"),tuple.getStringByField("message")));
-        }
-    }
-	
-	public static class KeyExtractor extends BaseRichBolt{
-		OutputCollector _collector;
-		Schema _schema;
-		int offset;
-		
-
-		@Override
-		public void declareOutputFields(OutputFieldsDeclarer declarer) {
-			declarer.declare(new Fields("random", "message"));
-		}
-
-		@Override
-		public void prepare(Map stormConf, TopologyContext context,
-				OutputCollector collector) {
-			_collector = collector;
-			offset = 0;
-			try {
-				_schema = new Schema.Parser().parse(new File ("src/main/resources/message.avsc"));
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-
-		@Override
-		public void execute(Tuple input) {
-			// TODO convert avro to json
-			Message message = new Message((byte[]) ((TupleImpl) input).get("str").toString().getBytes());
-						
-            ByteBuffer bb = message.payload();
-            System.out.println("payload: "+ bb.capacity() );
-            System.out.println("offset: "+ offset );
-            System.out.println("Bytebuffer: "+ bb);
-            System.out.println("message size: "+ message.size());
-            System.out.println("message: "+ ((TupleImpl) input).get("str").toString());
-            System.out.println("---------------");
-            
-            
-            byte[] avroMessage = new byte[23];
-            bb.position(bb.capacity()-23);
-            bb.get(avroMessage, 0, avroMessage.length);
-			
-			try {
-				DatumReader<GenericRecord> reader = new GenericDatumReader<GenericRecord>(_schema);
-				Decoder decoder = DecoderFactory.get().binaryDecoder(avroMessage, null);
-	            GenericRecord result = reader.read(null, decoder);
-	            System.out.println(result.toString());
-	            _collector.emit(new Values("random"+result.get("random"), Hex.encodeHexString(avroMessage)));
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-            _collector.ack(input);
-		}
-	}
-	
 	
 	public static void main(String[] args) throws Exception {
 		String propertiesFile = args[0];

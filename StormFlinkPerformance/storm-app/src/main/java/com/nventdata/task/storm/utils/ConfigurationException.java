@@ -1,4 +1,4 @@
-package com.nventdata.task.storm;
+package com.nventdata.task.storm.utils;
 
 public class ConfigurationException extends Exception {
 	private static final long serialVersionUID = 1L;
