@@ -89,7 +89,7 @@ under the License.
 		<!--<dependency>
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-streaming-connectors</artifactId>
-            <version>0.9-SNAPSHOT</version>
+            <version>0.9.0</version>
         </dependency>-->
         <dependency>
             <groupId>org.apache.flink</groupId>
@@ -111,6 +111,12 @@ under the License.
             <groupId>org.apache.kafka</groupId>
             <artifactId>kafka_2.10</artifactId>
             <version>0.8.2.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20141113</version>
         </dependency>
 
 
@@ -159,7 +165,7 @@ under the License.
 		    		</descriptorRefs>
 		    		<archive>
 		    			<manifest>
-		    				<mainClass>com.nventdata.task.flink.Main</mainClass>
+		    				<mainClass>com.nventdata.task.flink.FlinkKafkaTopology</mainClass>
 		    			</manifest>
 		    		</archive>
 		    	</configuration>
@@ -182,7 +188,7 @@ under the License.
 				<configuration>
 					<archive>
 						<manifestEntries>
-							<Main-Class>com.nventdata.task.flink.Main</Main-Class>
+							<Main-Class>com.nventdata.task.flink.FlinkKafkaTopology</Main-Class>
 						</manifestEntries>
 					</archive>
 				</configuration>
@@ -193,8 +199,8 @@ under the License.
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.1</version>
 				<configuration>
-					<source>1.6</source> <!-- If you want to use Java 8, change this to "1.8" -->
-					<target>1.6</target> <!-- If you want to use Java 8, change this to "1.8" -->
+					<source>1.7</source> <!-- If you want to use Java 8, change this to "1.8" -->
+					<target>1.7</target> <!-- If you want to use Java 8, change this to "1.8" -->
 				</configuration>
 			</plugin>
 		</plugins>
