@@ -1,5 +1,24 @@
 package com.nventdata.task.storm.bolt;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.EOFException;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+
+import org.apache.avro.Schema;
+import org.apache.avro.generic.GenericDatumReader;
+import org.apache.avro.generic.GenericDatumWriter;
+import org.apache.avro.generic.GenericRecord;
+import org.apache.avro.io.DatumReader;
+import org.apache.avro.io.Decoder;
+import org.apache.avro.io.DecoderFactory;
+import org.apache.avro.io.Encoder;
+import org.apache.avro.io.EncoderFactory;
+import org.json.JSONObject;
+
 import backtype.storm.topology.BasicOutputCollector;
 import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.topology.base.BaseBasicBolt;
@@ -25,7 +44,48 @@ public class SplitStreamBolt extends BaseBasicBolt {
 
     @Override
     public void execute(Tuple tuple, BasicOutputCollector collector) {
-    	String streamId = tuple.getStringByField("random");
-    	collector.emit (streamId, new Values(tuple.getStringByField("random"),tuple.getStringByField("message")));
+    	//System.out.println(tuple.getStringByField("avro"));
+    	JSONObject jsonObject = new JSONObject(tuple.getStringByField("avro"));
+        String randomField = "random"+ jsonObject.getInt("random");
+
+        String json = tuple.getStringByField("avro");
+        //System.out.println(jsonToAvro(json));
+    	collector.emit (randomField, new Values(randomField,jsonToAvro(json)));
     }
+
+	private byte[] jsonToAvro(String json) {
+		InputStream input = null;
+        GenericDatumWriter<GenericRecord> writer = null;
+        Encoder encoder = null;
+        ByteArrayOutputStream output = null;
+        try {
+            Schema schema = new Schema.Parser().parse(new File("src/main/resources/message.avsc"));
+            DatumReader<GenericRecord> reader = new GenericDatumReader<GenericRecord>(schema);
+            input = new ByteArrayInputStream(json.getBytes());
+            output = new ByteArrayOutputStream();
+            DataInputStream din = new DataInputStream(input);
+            writer = new GenericDatumWriter<GenericRecord>(schema);
+            Decoder decoder = DecoderFactory.get().jsonDecoder(schema, din);
+            encoder = EncoderFactory.get().binaryEncoder(output, null);
+            GenericRecord datum;
+            while (true) {
+                try {
+                    datum = reader.read(null, decoder);
+                } catch (EOFException eofe) {
+                    break;
+                }
+                writer.write(datum, encoder);
+            }
+            encoder.flush();
+            return output.toByteArray();
+        } catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+            try { input.close(); } catch (Exception e) { }
+        }
+		return json.getBytes();
+        
+    
+	}
 }

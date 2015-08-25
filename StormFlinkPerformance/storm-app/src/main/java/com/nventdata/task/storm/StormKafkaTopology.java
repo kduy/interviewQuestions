@@ -86,7 +86,7 @@ public class StormKafkaTopology {
 				Properties props = new Properties();
 	            props.put("metadata.broker.list", "localhost:9092");
 	            props.put("request.required.acks", "1");
-	            props.put("serializer.class", "kafka.serializer.StringEncoder");
+	            props.put("serializer.class", "kafka.serializer.DefaultEncoder");
 				topologyProperties.getStormConfig().put(KafkaBolt.KAFKA_BROKER_PROPERTIES,props);
 	            
 				cluster.submitTopology(topologyProperties.getTopologyName(), topologyProperties.getStormConfig(), stormTopology);
@@ -109,14 +109,14 @@ public class StormKafkaTopology {
 		SpoutConfig kafkaConfig = new SpoutConfig(kafkaBrokerHosts, kafkaTopic, "", kafkaTopic);
 		kafkaConfig.startOffsetTime = kafka.api.OffsetRequest.LatestTime();
 		kafkaConfig.forceFromStart = topologyProperties.isKafkaStartFromBeginning();
-		kafkaConfig.scheme = new SchemeAsMultiScheme(new StringScheme());
+		kafkaConfig.scheme = new SchemeAsMultiScheme(new AvroScheme());
 		
 		// build a Storm topology
 		TopologyBuilder builder = new TopologyBuilder();
 
 		builder.setSpout("avro", new KafkaSpout(kafkaConfig));//, topologyProperties.getKafkaSpoutParallelism());
-		builder.setBolt("decode", new DecodeAvroBolt()).shuffleGrouping("avro");	
-		builder.setBolt("split", new SplitStreamBolt()).shuffleGrouping("decode");
+		//builder.setBolt("decode", new DecodeAvroBolt()).shuffleGrouping("avro");	
+		builder.setBolt("split", new SplitStreamBolt()).shuffleGrouping("avro");
         
 		builder.setBolt("forwardToKafka1", createKafkaBoltWithTopic("random1")).shuffleGrouping("split", "random1");
         builder.setBolt("forwardToKafka2", createKafkaBoltWithTopic("random2")).shuffleGrouping("split", "random2");
@@ -131,10 +131,10 @@ public class StormKafkaTopology {
 	 * @param kafkaTopic
 	 * @return
 	 */
-	private KafkaBolt<String, String> createKafkaBoltWithTopic(String kafkaTopic) {
-		return new KafkaBolt<String, String> ()
+	private KafkaBolt<String, byte[]> createKafkaBoltWithTopic(String kafkaTopic) {
+		return new KafkaBolt<String, byte[]> ()
         		.withTopicSelector( new DefaultTopicSelector(kafkaTopic))
-  				.withTupleToKafkaMapper( new FieldNameBasedTupleToKafkaMapper<String, String>());
+  				.withTupleToKafkaMapper( new FieldNameBasedTupleToKafkaMapper<String, byte[]>());
 	}
 	
 	public static void main(String[] args) throws Exception {
