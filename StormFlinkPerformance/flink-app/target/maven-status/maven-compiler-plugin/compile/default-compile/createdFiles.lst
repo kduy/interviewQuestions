@@ -1,5 +1,3 @@
-com/nventdata/task/flink/Main.class
+com/nventdata/task/flink/FlinkKafkaTopology.class
+com/nventdata/task/flink/FlinkKafkaTopology$1.class
 com/nventdata/task/flink/MySimpleStringSchema.class
-com/nventdata/task/flink/Main$avroDecodingMap.class
-com/nventdata/task/flink/Main$2.class
-com/nventdata/task/flink/Main$1.class

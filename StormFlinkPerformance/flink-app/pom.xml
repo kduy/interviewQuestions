@@ -44,6 +44,10 @@ under the License.
 				<enabled>true</enabled>
 			</snapshots>
 		</repository>
+            <repository>
+                <id>confluent</id>
+                <url>http://packages.confluent.io/maven/</url>
+            </repository>
 	</repositories>
 	
 	<!-- 
@@ -125,6 +129,11 @@ under the License.
 			<version>20131018</version>
 		</dependency>
 
+        <dependency>
+            <groupId>io.confluent</groupId>
+            <artifactId>kafka-avro-serializer</artifactId>
+            <version>1.0</version>
+        </dependency>
 
 
         <!-- For tests -->
