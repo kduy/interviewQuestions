@@ -23,8 +23,6 @@ import org.apache.avro.generic.GenericDatumReader;
 import org.apache.avro.generic.GenericDatumWriter;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.avro.io.*;
-import org.apache.commons.codec.binary.Hex;
-import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.typeinfo.BasicTypeInfo;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.java.tuple.Tuple2;
@@ -32,18 +30,13 @@ import org.apache.flink.streaming.api.collector.selector.OutputSelector;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.SplitDataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.streaming.connectors.json.JSONParser;
 import org.apache.flink.streaming.connectors.kafka.api.KafkaSink;
 import org.apache.flink.streaming.connectors.kafka.api.KafkaSource;
 import org.apache.flink.streaming.util.serialization.DeserializationSchema;
-import org.apache.flink.streaming.util.serialization.JavaDefaultStringSchema;
 import org.apache.flink.streaming.util.serialization.SerializationSchema;
-import kafka.message.Message;
-import org.apache.sling.commons.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.*;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,15 +57,12 @@ public class FlinkKafkaTopology {
         DataStream<String> kafkaStream = env
                 .addSource(new KafkaSource<String>(host + ":" + port, topic, new MySimpleStringSchema()));
 
-        kafkaStream.print();
-
-        //DataStream<Tuple2<Integer,String> > deserializedStream = kafkaStream.map(new avroDecodingMap());
-
         SplitDataStream<String> splitStream = kafkaStream.split(new OutputSelector<String>() {
             @Override
-            public Iterable<String> select(String value) {
+            public Iterable<
+            String> select(String value) {
                 List<String> outputs = new ArrayList<String>();
-                JSONObject jsonObject = new JSONObject(value);
+                JSONObject jsonObject = new JSONObject(value.trim());
                 int randomField = jsonObject.getInt("random");
 
                 switch (randomField) {
@@ -90,15 +80,15 @@ public class FlinkKafkaTopology {
                 return outputs;
             }
         });
-
         for (int i = 1; i <=3 ; i++){
             forwardToKafka(splitStream,"random"+i, "random"+i);
         }
+
         env.execute();
     }
 
     private static void forwardToKafka(SplitDataStream<String> splitStream,String streamName, String topic) {
-        splitStream.select(streamName).addSink(new KafkaSink<String>(host + ":" + port, topic, new MySimpleStringSchema()));
+        splitStream.select(streamName).addSink(new KafkaSink<String>(host + ":" + 9092, topic, new MySimpleStringSchema()));
     }
 
     private static boolean parseParameters(String[] args) {
@@ -108,50 +98,10 @@ public class FlinkKafkaTopology {
             topic = args[2];
             return true;
         } else {
-            System.err.println("Usage: KafkaConsumerExample <host> <port> <topic>");
+            System.err.println("Usage: FlinkKafkaTopology <host> <port> <topic>");
             return false;
         }
     }
-    
-    /*public static final class avroDecodingMap implements MapFunction<String, Tuple2<Integer, String>> {
-
-
-        @Override
-        public Tuple2<Integer,String> map(String value) throws Exception {
-           *//* Message message = new Message(value.getBytes());
-
-            ByteBuffer bb = message.payload();
-
-            byte[] avroMessage = new byte[23];
-            bb.position(bb.capacity()-23);
-            bb.get(avroMessage, 0, avroMessage.length);*//*
-            
-            *//*byte [] avroMessage = value.getBytes();//("UTF-16");//ISO-8859-1
-
-            *//**//*Message message = new Message((value.getBytes()));
-            System.out.println(message.toString()+ "------------");
-            ByteBuffer bb = message.payload();
-            if (bb == null)
-                System.exit(1);
-            byte[] avroMessage = new byte[bb.remaining()];
-            bb.get(avroMessage, 0, avroMessage.length);*//**//*
-            
-            try {
-                Schema _schema = new Schema.Parser().parse(new File("/tmp/message.avsc"));
-                DatumReader<GenericRecord> reader = new GenericDatumReader<GenericRecord>(_schema);
-                Decoder decoder = DecoderFactory.get().binaryDecoder(avroMessage, null);
-                GenericRecord result = reader.read(null, decoder);
-                System.out.println(result);
-                return new Tuple2<Integer, String>(Integer.parseInt(result.get("random").toString()), value) ;
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return null;*//*
-            return new Tuple2<Integer, String>(1, value) ;
-
-        }
-    }*/
-
 }
 
 class MySimpleStringSchema implements SerializationSchema<String, byte[]> , DeserializationSchema<String>  {
@@ -163,7 +113,6 @@ class MySimpleStringSchema implements SerializationSchema<String, byte[]> , Dese
             DatumReader<GenericRecord> reader = new GenericDatumReader<GenericRecord>(_schema);
             Decoder decoder = DecoderFactory.get().binaryDecoder(message, null);
             GenericRecord result = reader.read(null, decoder);
-            System.out.println(result);
             return result.toString();
         } catch (IOException e) {
             e.printStackTrace();

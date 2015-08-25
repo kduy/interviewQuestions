@@ -115,7 +115,6 @@ public class StormKafkaTopology {
 		TopologyBuilder builder = new TopologyBuilder();
 
 		builder.setSpout("avro", new KafkaSpout(kafkaConfig));//, topologyProperties.getKafkaSpoutParallelism());
-		//builder.setBolt("decode", new DecodeAvroBolt()).shuffleGrouping("avro");	
 		builder.setBolt("split", new SplitStreamBolt()).shuffleGrouping("avro");
         
 		builder.setBolt("forwardToKafka1", createKafkaBoltWithTopic("random1")).shuffleGrouping("split", "random1");
