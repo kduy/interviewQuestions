@@ -4,7 +4,6 @@ from kafka.client import KafkaClient
 from kafka.producer import SimpleProducer, KeyedProducer
 from random import randint
 import uuid, io, json, argparse
-import logging
 
 
 parser = argparse.ArgumentParser(description='Push Avro messages into Kafka')
@@ -24,10 +23,6 @@ kafkaConnect = args["k"]
 topic        = args["t"]
 quiet        = args["q"]
 
-logging.basicConfig(
-    format='%(asctime)s.%(msecs)s:%(name)s:%(thread)d:%(levelname)s:%(process)d:%(message)s',
-    level=logging.DEBUG
-)
 
 schema = avro.schema.parse(json.dumps({
     'name': 'kafkatest',
@@ -45,11 +40,11 @@ kafka = KafkaClient(kafkaConnect)
 kafka.ensure_topic_exists(topic)
 producer = SimpleProducer(kafka)
 
-writer = avro.io.DatumWriter(schema)
-bytes_writer = io.BytesIO()
-encoder = avro.io.BinaryEncoder(bytes_writer)
-
-for x in xrange(maxRecords):  
+for x in xrange(maxRecords):
+  writer = avro.io.DatumWriter(schema)
+  bytes_writer = io.BytesIO()
+  encoder = avro.io.BinaryEncoder(bytes_writer)
+  
   writer.write( {'id': x, 'random': randint(1, 3) ,'data': str(uuid.uuid4().get_hex().upper()[0:20])}, encoder)
   raw_bytes = bytes_writer.getvalue()
   producer.send_messages(topic, raw_bytes)

@@ -5,7 +5,6 @@ ENV KAFKA_VERSION="0.8.2.1" SCALA_VERSION="2.10"
 
 
 
-
 # Default to UTF-8 file.encoding
 ENV LANG C.UTF-8
 
@@ -25,14 +24,12 @@ VOLUME ["/kafka"]
 
 ENV KAFKA_HOME /opt/kafka_${SCALA_VERSION}-${KAFKA_VERSION}
 
-RUN $KAFKA_HOME/bin/zookeeper-server-start.sh config/zookeeper.properties &
 RUN $KAFKA_HOME/bin/kafka-server-start.sh $KAFKA_HOME/config/server.properties  &
 
 RUN $KAFKA_HOME/bin/kafka-topics.sh  --zookeeper localhost:2181 --create --topic neverwinter --partition 1 --replication-factor 1
 RUN $KAFKA_HOME/bin/kafka-topics.sh  --zookeeper localhost:2181 --create --topic random1 --partition 1 --replication-factor 1
 RUN $KAFKA_HOME/bin/kafka-topics.sh  --zookeeper localhost:2181 --create --topic random2 --partition 1 --replication-factor 1
 RUN $KAFKA_HOME/bin/kafka-topics.sh  --zookeeper localhost:2181 --create --topic random3 --partition 1 --replication-factor 1
-
 
 RUN $KAFKA_HOME/bin/kafka-console-consumer.sh --zookeeper localhost:2181 --topic neverwinter
 

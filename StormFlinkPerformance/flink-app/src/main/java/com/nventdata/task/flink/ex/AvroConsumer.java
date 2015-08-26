@@ -11,9 +11,12 @@ package com.nventdata.task.flink.ex;
         import org.apache.avro.io.DatumReader;
         import org.apache.avro.io.Decoder;
         import org.apache.avro.io.DecoderFactory;
-        import org.apache.commons.collections.buffer.CircularFifoBuffer;
+        import org.slf4j.Logger;
+        import org.slf4j.LoggerFactory;
 
+        import java.io.BufferedWriter;
         import java.io.File;
+        import java.io.FileWriter;
         import java.io.IOException;
         import java.util.HashMap;
         import java.util.Map;
@@ -21,48 +24,57 @@ package com.nventdata.task.flink.ex;
 
 public class AvroConsumer {
 
+    public static Logger LOG = LoggerFactory.getLogger(AvroConsumer.class);
     private Properties kafkaProps = new Properties();
     private ConsumerConnector consumer;
     private ConsumerConfig config;
     private KafkaStream<byte[], byte[]> stream;
     private String waitTime;
+    private int count;
+    
+    public AvroConsumer(){
+        count = 0;
+    }
+    
+    public static void main (String [] args){
+        AvroConsumer consumer = new AvroConsumer();
+        consumer.countMessage("random1");
+        System.out.println("--------------"+consumer.getCount());
 
-
-    public static void main(String[] args) {
-
+    }
+    
+    public int getCount(){
+        return count;
+    }
+    
+    public  void countMessage(String topic) {
 
         byte[] next;
-        int num;
-        AvroConsumer movingAvg = new AvroConsumer();
+        
         String zkUrl = "localhost:2181";
         String groupId = "group1";
-        String topic = "random1";
-        int window = 10;
-        movingAvg.waitTime = "120000";
+        
+        waitTime = "10000";
 
+        configure(zkUrl, groupId);
 
+        start(topic);
 
-        CircularFifoBuffer buffer = new CircularFifoBuffer(window);
-
-        movingAvg.configure(zkUrl,groupId);
-
-        movingAvg.start(topic);
-
-        while ((next = movingAvg.getNextMessage()) != null) {
+        while ((next = getNextMessage()) != null) {
             try {
                 Schema _schema = new Schema.Parser().parse(new File("/tmp/message.avsc"));
                 DatumReader<GenericRecord> reader = new GenericDatumReader<GenericRecord>(_schema);
                 Decoder decoder = DecoderFactory.get().binaryDecoder(next, null);
                 GenericRecord result = reader.read(null, decoder);
                 System.out.println(result);
+                count ++;
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
 
-        movingAvg.consumer.shutdown();
-        System.exit(0);
-
+        //consumer.shutdown();
+        
     }
 
     private void configure(String zkUrl, String groupId) {
@@ -95,6 +107,7 @@ public class AvroConsumer {
         /* Kafka will give us a list of streams of messages for each topic.
         In this case, its just one topic with a list of a single stream */
         stream = consumer.createMessageStreams(topicCountMap, decoder, decoder).get(topic).get(0);
+
     }
 
     private byte[] getNextMessage() {
@@ -107,6 +120,4 @@ public class AvroConsumer {
             return null;
         }
     }
-
-
 }

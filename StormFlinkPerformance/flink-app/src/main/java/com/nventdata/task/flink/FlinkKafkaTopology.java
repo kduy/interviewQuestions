@@ -17,6 +17,7 @@
 
 package com.nventdata.task.flink;
 
+import com.nventdata.task.flink.ex.AvroConsumer;
 import org.apache.avro.Schema;
 import org.apache.avro.file.DataFileWriter;
 import org.apache.avro.generic.GenericDatumReader;
@@ -85,6 +86,7 @@ public class FlinkKafkaTopology {
         }
 
         env.execute();
+
     }
 
     private static void forwardToKafka(SplitDataStream<String> splitStream,String streamName, String topic) {
