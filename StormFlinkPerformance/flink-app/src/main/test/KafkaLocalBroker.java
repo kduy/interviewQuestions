@@ -1,25 +1,26 @@
-import io.netty.util.NetUtil;
 import junit.framework.Assert;
-import kafka.api.FetchRequest;
-import kafka.api.FetchRequestBuilder;
+import kafka.admin.AdminUtils;
 import kafka.consumer.ConsumerConfig;
-import kafka.javaapi.FetchResponse;
-import kafka.javaapi.consumer.SimpleConsumer;
-import kafka.javaapi.message.ByteBufferMessageSet;
-import kafka.javaapi.producer.Producer;
-import kafka.message.MessageAndOffset;
+import kafka.message.Message;
 import kafka.network.SocketServer;
 import kafka.producer.KeyedMessage;
-import kafka.producer.ProducerConfig;
 import kafka.server.KafkaConfig;
 import kafka.server.KafkaServer;
 import kafka.utils.Time;
-import kafka.utils.Utils;
+import kafka.utils.VerifiableProperties;
 import org.I0Itec.zkclient.ZkClient;
 import org.I0Itec.zkclient.exception.ZkMarshallingError;
 import org.I0Itec.zkclient.serialize.ZkSerializer;
+import org.apache.avro.Schema;
+import org.apache.avro.generic.GenericDatumReader;
+import org.apache.avro.generic.GenericDatumWriter;
+import org.apache.avro.generic.GenericRecord;
+import org.apache.avro.io.*;
+import org.apache.avro.specific.SpecificDatumWriter;
 import org.apache.curator.test.TestingServer;
 import org.apache.flink.runtime.net.NetUtils;
+
+
 import org.apache.zookeeper.server.ServerConfig;
 import org.apache.zookeeper.server.ZooKeeperServerMain;
 import org.apache.zookeeper.server.quorum.QuorumPeerConfig;
@@ -30,15 +31,21 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import scala.tools.cmd.gen.AnyVals;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.util.Properties;
+
+
+
+
+import kafka.javaapi.producer.Producer;
+import kafka.producer.ProducerConfig;
+
+import org.apache.avro.generic.GenericData.Record;
+import org.apache.avro.generic.IndexedRecord;
+
 
 public class KafkaLocalBroker {
     private static final Logger LOG = LoggerFactory.getLogger(KafkaLocalBroker.class);
@@ -68,8 +75,10 @@ public class KafkaLocalBroker {
         tmpZkDir = tempFolder.newFolder();
         tmpKafkaDir = tempFolder.newFolder();
 
-        kafkaHost = InetAddress.getLocalHost().getHostName();
+        kafkaHost = "localhost";//InetAddress.getLocalHost().getHostName();
+        System.out.println("-------------------"+kafkaHost);
         zkPort = NetUtils.getAvailablePort();
+        System.out.println("-------------------"+zkPort);
 //        zkPort = findRandomAvaiPort();
         
         zkConnectionString = "localhost:" + zkPort;
@@ -85,8 +94,9 @@ public class KafkaLocalBroker {
             broker = getKafkaServer(0, tmpKafkaDir);
             
             SocketServer socketServer = broker.socketServer();
-            brokerConnectionString = socketServer.host() + ":"+ socketServer.port();
-            
+//            brokerConnectionString = socketServer.host() + ":"+ socketServer.port();
+            brokerConnectionString =   "localhost:"+ socketServer.port();
+
             LOG.info("Zookeeper and KafkaServer started");
             
         } catch (Throwable t) {
@@ -122,7 +132,78 @@ public class KafkaLocalBroker {
     public  void simpleTest() {
         Assert.assertTrue(true);
     }
+    
+    @Test
+    public  void testTopology(){
+        
+        // create topic
+        String [] topics = new String [] {"neverwinter", "random1", "random2", "random3"};
+        for (String topic : topics) {
+            createTestTopic(topic,1, 1);
+        }
+        
+        // avro producer
+        
 
+        try	{
+//          Properties props = new Properties();
+//          props.load(new BufferedInputStream(new FileInputStream(configuration)));
+            
+            String avroSchemaFileName = "/tmp/message.avsc";// props.getProperty("avro.schema.file");
+            String topic = "neverwinter" ; //props.getProperty("kafka.topic");
+
+            // schema file
+            File avroSchemaFile = new File(avroSchemaFileName);
+
+            Properties props = new Properties();
+            props.setProperty("metadata.broker.list", brokerConnectionString);
+            System.out.println("------------"+brokerConnectionString);
+
+            ProducerConfig config = new ProducerConfig(props);
+
+            Producer<String, byte[]> producer = new Producer<String, byte[]>(config);
+
+            
+            //Record record = fillRecord(fillAvroTestSchema(avroSchemaFile));
+            byte[] avroRecord = jsonToAvro("{\"id\":1,\"random\":1,\"data\":\"duyvk\"}",avroSchemaFileName); //encodeMessage(topic,record,props);
+
+            System.out.println("--------------"+avroRecord +"--------------");
+
+            // Print ID received from avro schema repo server
+            /*for (int n = 1;n <= 4 ; n++){
+                System.out.print(avroRecord[n]);
+            }
+            System.out.println();*/
+
+            //Send message to kafka brokers
+            KeyedMessage<String, byte[]> data = new KeyedMessage<String, byte[]>(topic, avroRecord);
+            producer.send(data);
+
+            System.out.println();
+            producer.close();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+        
+        // process
+        
+        
+        // avro consumer
+        
+        
+        
+    }
+    
+    private void createTestTopic (String topic, int numOfPartitions, int replicationFactor){
+        LOG.info("Creating topic: "+ topic);
+        Properties topicConfig = new Properties();
+        AdminUtils.createTopic(zkClient, topic, numOfPartitions, replicationFactor, topicConfig);
+    }
+
+    
+    
     public static class MyKafkaZKStringSerializer implements ZkSerializer {
 
         @Override
@@ -173,8 +254,55 @@ public class KafkaLocalBroker {
             return ss.getLocalPort();
         }
     }
-    
-    
+
+    @SuppressWarnings("deprecation")
+    private static Schema fillAvroTestSchema(File jsonSchemaFile) throws IOException{
+        //Schema.Parser schemaParser = Schema.Parser();
+        return Schema.parse(jsonSchemaFile);
+    }
+
+    private static Record fillRecord(Schema schema){
+        Record record = new Record(schema);
+        //record.put("test","Hello World");
+        return record;
+    }
+
+    /*private static byte[] encodeMessage(String topic, IndexedRecord record, Properties props){
+        KafkaAvroMessageEncoder encoder = new KafkaAvroMessageEncoder(topic, null);
+        encoder.init(props, topic);
+        return encoder.toBytes(record);
+    }*/
+
+    public static byte[] jsonToAvro(String json, String filePath) throws IOException {
+        InputStream input = null;
+        GenericDatumWriter<GenericRecord> writer = null;
+        Encoder encoder = null;
+        ByteArrayOutputStream output = null;
+        try {
+            Schema schema = new Schema.Parser().parse(new File(filePath));
+            DatumReader<GenericRecord> reader = new GenericDatumReader<GenericRecord>(schema);
+            input = new ByteArrayInputStream(json.getBytes());
+            output = new ByteArrayOutputStream();
+            DataInputStream din = new DataInputStream(input);
+            writer = new GenericDatumWriter<GenericRecord>(schema);
+            Decoder decoder = DecoderFactory.get().jsonDecoder(schema, din);
+            encoder = EncoderFactory.get().binaryEncoder(output, null);
+            GenericRecord datum;
+            while (true) {
+                try {
+                    datum = reader.read(null, decoder);
+                } catch (EOFException eofe) {
+                    break;
+                }
+                writer.write(datum, encoder);
+            }
+            encoder.flush();
+            return output.toByteArray();
+        } finally {
+            try { input.close(); } catch (Exception e) { }
+        }
+
+    }
     
     
 }
