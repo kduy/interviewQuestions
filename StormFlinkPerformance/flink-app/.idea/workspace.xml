@@ -22,20 +22,40 @@
     <favorites_list name="flink-app" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.6467931">
+    <splitter split-orientation="horizontal" split-proportion="0.4968383">
       <split-first>
         <leaf>
           <file leaf-file-name="FlinkKafkaTopology.java" pinned="false" current="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/src/main/java/com/nventdata/task/flink/FlinkKafkaTopology.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="0.0" vertical-offset="1455" max-vertical-offset="2115">
-                  <caret line="173" column="5" selection-start-line="144" selection-start-column="4" selection-end-line="173" selection-end-column="5" />
+                <state vertical-scroll-proportion="0.0" vertical-offset="738" max-vertical-offset="2700">
+                  <caret line="87" column="8" selection-start-line="87" selection-start-column="8" selection-end-line="87" selection-end-column="22" />
                   <folding>
-                    <element signature="e#2558#3343#0" expanded="true" />
-                    <element signature="e#2735#2743#0" expanded="true" />
-                    <element signature="e#3332#3333#0" expanded="true" />
-                    <element signature="e#4440#4455#0" expanded="true" />
-                    <element signature="e#5681#5696#0" expanded="true" />
+                    <element signature="e#0#6558#0" expanded="true" />
+                    <element signature="imports" expanded="true" />
+                    <element signature="e#2560#3345#0" expanded="true" />
+                    <element signature="e#2737#2745#0" expanded="true" />
+                    <element signature="e#3334#3335#0" expanded="true" />
+                    <element signature="e#4442#4457#0" expanded="true" />
+                    <element signature="e#5213#5214#0" expanded="true" />
+                    <element signature="e#5266#5267#0" expanded="true" />
+                    <element signature="e#5683#5698#0" expanded="true" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="MySimpleStringSchema.java" pinned="false" current="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/src/main/test/MySimpleStringSchema.java">
+              <provider selected="true" editor-type-id="text-editor">
+                <state vertical-scroll-proportion="0.0" vertical-offset="903" max-vertical-offset="1290">
+                  <caret line="77" column="46" selection-start-line="77" selection-start-column="46" selection-end-line="77" selection-end-column="46" />
+                  <folding>
+                    <element signature="imports" expanded="true" />
+                    <element signature="e#846#861#0" expanded="true" />
+                    <element signature="e#1241#1242#0" expanded="true" />
+                    <element signature="e#1269#1270#0" expanded="true" />
+                    <element signature="e#1978#1993#0" expanded="true" />
                   </folding>
                 </state>
               </provider>
@@ -45,8 +65,10 @@
             <entry file="file://$PROJECT_DIR$/src/main/java/com/nventdata/task/flink/KafkaConsumersVerification.java">
               <provider selected="true" editor-type-id="text-editor">
                 <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="465">
-                  <caret line="14" column="42" selection-start-line="14" selection-start-column="42" selection-end-line="14" selection-end-column="42" />
-                  <folding />
+                  <caret line="25" column="0" selection-start-line="25" selection-start-column="0" selection-end-line="25" selection-end-column="0" />
+                  <folding>
+                    <element signature="e#0#758#0" expanded="true" />
+                  </folding>
                 </state>
               </provider>
             </entry>
@@ -54,15 +76,13 @@
           <file leaf-file-name="KafkaLocalBroker.java" pinned="false" current="true" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/src/main/test/KafkaLocalBroker.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="0.2761194" vertical-offset="211" max-vertical-offset="5445">
-                  <caret line="19" column="45" selection-start-line="19" selection-start-column="45" selection-end-line="19" selection-end-column="45" />
+                <state vertical-scroll-proportion="0.2734375" vertical-offset="485" max-vertical-offset="5640">
+                  <caret line="37" column="17" selection-start-line="37" selection-start-column="17" selection-end-line="37" selection-end-column="17" />
                   <folding>
-                    <element signature="e#4382#4383#0" expanded="true" />
-                    <element signature="e#4421#4422#0" expanded="true" />
-                    <element signature="e#8562#8594#0" expanded="true" />
-                    <element signature="e#9640#9655#0" expanded="true" />
-                    <element signature="e#11601#11930#0" expanded="true" />
-                    <element signature="e#11919#11920#0" expanded="true" />
+                    <element signature="e#9238#9270#0" expanded="true" />
+                    <element signature="e#10316#10331#0" expanded="true" />
+                    <element signature="e#12277#12606#0" expanded="true" />
+                    <element signature="e#12595#12596#0" expanded="true" />
                   </folding>
                 </state>
               </provider>
@@ -92,27 +112,14 @@
       </split-first>
       <split-second>
         <leaf>
-          <file leaf-file-name="AvroConsumer.java" pinned="false" current="false" current-in-tab="true">
+          <file leaf-file-name="AvroConsumer.java" pinned="false" current="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/src/main/java/com/nventdata/task/flink/ex/AvroConsumer.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="-1.2164179" vertical-offset="581" max-vertical-offset="1605">
-                  <caret line="36" column="5" selection-start-line="36" selection-start-column="5" selection-end-line="36" selection-end-column="5" />
+                <state vertical-scroll-proportion="0.0" vertical-offset="805" max-vertical-offset="2040">
+                  <caret line="114" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="130" selection-end-column="0" />
                   <folding>
-                    <element signature="e#1197#1198#0" expanded="true" />
-                    <element signature="e#1222#1223#0" expanded="true" />
-                    <element signature="e#1996#2011#0" expanded="true" />
-                    <element signature="e#3229#3246#0" expanded="true" />
+                    <element signature="e#0#4200#0" expanded="true" />
                   </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="AvroConsumer.java" pinned="false" current="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/src/main/test/AvroConsumer.java">
-              <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="0.0" vertical-offset="645" max-vertical-offset="1545">
-                  <caret line="100" column="64" selection-start-line="100" selection-start-column="64" selection-end-line="100" selection-end-column="64" />
-                  <folding />
                 </state>
               </provider>
             </entry>
@@ -120,19 +127,26 @@
           <file leaf-file-name="KafkaITCase.java" pinned="false" current="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/src/main/test/KafkaITCase.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="0.03846154" vertical-offset="3106" max-vertical-offset="18285">
-                  <caret line="222" column="10" selection-start-line="222" selection-start-column="10" selection-end-line="222" selection-end-column="10" />
+                <state vertical-scroll-proportion="-10.5" vertical-offset="4602" max-vertical-offset="18285">
+                  <caret line="340" column="26" selection-start-line="340" selection-start-column="23" selection-end-line="340" selection-end-column="26" />
                   <folding />
                 </state>
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="AdminUtils.scala" pinned="false" current="false" current-in-tab="false">
-            <entry file="jar://$MAVEN_REPOSITORY$/org/apache/kafka/kafka_2.10/0.8.2.1/kafka_2.10-0.8.2.1-sources.jar!/kafka/admin/AdminUtils.scala">
+          <file leaf-file-name="AvroConsumer.java" pinned="false" current="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/src/main/test/AvroConsumer.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="0.0" vertical-offset="3855" max-vertical-offset="5070">
-                  <caret line="284" column="14" selection-start-line="284" selection-start-column="14" selection-end-line="284" selection-end-column="14" />
-                  <folding />
+                <state vertical-scroll-proportion="0.47076923" vertical-offset="162" max-vertical-offset="2130">
+                  <caret line="21" column="25" selection-start-line="21" selection-start-column="13" selection-end-line="21" selection-end-column="25" />
+                  <folding>
+                    <element signature="imports" expanded="true" />
+                    <element signature="e#1033#1034#0" expanded="true" />
+                    <element signature="e#1058#1059#0" expanded="true" />
+                    <element signature="e#1086#1087#0" expanded="true" />
+                    <element signature="e#1114#1115#0" expanded="true" />
+                    <element signature="e#2956#2973#0" expanded="true" />
+                  </folding>
                 </state>
               </provider>
             </entry>
@@ -156,13 +170,14 @@
         <option value="$PROJECT_DIR$/src/main/java/com/nventdata/task/flink/ex/SimpleConsumer.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/nventdata/task/flink/ex/FlinkKafkaTopology.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/nventdata/task/flink/ex/SimpleMovingAvgZkConsumer.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/nventdata/task/flink/KafkaConsumersVerification.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/nventdata/task/flink/FlinkKafkaTopology.java" />
         <option value="$PROJECT_DIR$/src/main/test/abc.java" />
         <option value="$PROJECT_DIR$/pom.xml" />
-        <option value="$PROJECT_DIR$/src/main/java/com/nventdata/task/flink/ex/AvroConsumer.java" />
-        <option value="$PROJECT_DIR$/src/main/test/AvroConsumer.java" />
         <option value="$PROJECT_DIR$/src/main/test/KafkaITCase.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/nventdata/task/flink/ex/AvroConsumer.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/nventdata/task/flink/KafkaConsumersVerification.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/nventdata/task/flink/FlinkKafkaTopology.java" />
+        <option value="$PROJECT_DIR$/src/main/test/MySimpleStringSchema.java" />
+        <option value="$PROJECT_DIR$/src/main/test/AvroConsumer.java" />
         <option value="$PROJECT_DIR$/src/main/test/KafkaLocalBroker.java" />
       </list>
     </option>
@@ -248,10 +263,6 @@
               <option name="myItemId" value="test" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="KafkaLocalBroker.java" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.ClassesTreeStructureProvider$PsiClassOwnerTreeNode" />
-            </PATH_ELEMENT>
           </PATH>
           <PATH>
             <PATH_ELEMENT>
@@ -273,6 +284,10 @@
             <PATH_ELEMENT>
               <option name="myItemId" value="test" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="KafkaLocalBroker.java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.ClassesTreeStructureProvider$PsiClassOwnerTreeNode" />
             </PATH_ELEMENT>
           </PATH>
           <PATH>
@@ -454,24 +469,7 @@
       <recent name="$PROJECT_DIR$/src/main/java/com/nventdata/task/flink/ex" />
     </key>
   </component>
-  <component name="RunManager" selected="JUnit.KafkaLocalBroker">
-    <configuration default="false" name="KafkaLocalBroker" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
-      <option name="MAIN_CLASS_NAME" value="KafkaLocalBroker" />
-      <option name="VM_PARAMETERS" />
-      <option name="PROGRAM_PARAMETERS" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
-      <option name="ENABLE_SWING_INSPECTOR" value="false" />
-      <option name="ENV_VARIABLES" />
-      <option name="PASS_PARENT_ENVS" value="true" />
-      <module name="flink-app" />
-      <envs />
-      <RunnerSettings RunnerId="Run" />
-      <ConfigurationWrapper RunnerId="Run" />
-      <method />
-    </configuration>
+  <component name="RunManager" selected="JUnit.KafkaLocalBroker.testTopology">
     <configuration default="false" name="KafkaLocalBroker.test" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
       <module name="flink-app" />
@@ -560,6 +558,28 @@
       </option>
       <envs />
       <patterns />
+      <RunnerSettings RunnerId="Run" />
+      <ConfigurationWrapper RunnerId="Run" />
+      <method />
+    </configuration>
+    <configuration default="false" name="AvroConsumer" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
+        <pattern>
+          <option name="PATTERN" value="com.nventdata.task.flink.ex.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="MAIN_CLASS_NAME" value="com.nventdata.task.flink.ex.AvroConsumer" />
+      <option name="VM_PARAMETERS" />
+      <option name="PROGRAM_PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="ENABLE_SWING_INSPECTOR" value="false" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <module name="flink-app" />
+      <envs />
       <RunnerSettings RunnerId="Run" />
       <ConfigurationWrapper RunnerId="Run" />
       <method />
@@ -1012,19 +1032,19 @@
       <method />
     </configuration>
     <list size="5">
-      <item index="0" class="java.lang.String" itemvalue="Application.KafkaLocalBroker" />
-      <item index="1" class="java.lang.String" itemvalue="JUnit.KafkaLocalBroker.test" />
-      <item index="2" class="java.lang.String" itemvalue="JUnit.KafkaLocalBroker" />
-      <item index="3" class="java.lang.String" itemvalue="JUnit.KafkaLocalBroker.simpleTest" />
-      <item index="4" class="java.lang.String" itemvalue="JUnit.KafkaLocalBroker.testTopology" />
+      <item index="0" class="java.lang.String" itemvalue="JUnit.KafkaLocalBroker.test" />
+      <item index="1" class="java.lang.String" itemvalue="JUnit.KafkaLocalBroker" />
+      <item index="2" class="java.lang.String" itemvalue="JUnit.KafkaLocalBroker.simpleTest" />
+      <item index="3" class="java.lang.String" itemvalue="JUnit.KafkaLocalBroker.testTopology" />
+      <item index="4" class="java.lang.String" itemvalue="Application.AvroConsumer" />
     </list>
     <recent_temporary>
       <list size="5">
-        <item index="0" class="java.lang.String" itemvalue="JUnit.KafkaLocalBroker" />
-        <item index="1" class="java.lang.String" itemvalue="JUnit.KafkaLocalBroker.testTopology" />
-        <item index="2" class="java.lang.String" itemvalue="JUnit.KafkaLocalBroker.simpleTest" />
-        <item index="3" class="java.lang.String" itemvalue="JUnit.KafkaLocalBroker.test" />
-        <item index="4" class="java.lang.String" itemvalue="Application.KafkaLocalBroker" />
+        <item index="0" class="java.lang.String" itemvalue="JUnit.KafkaLocalBroker.testTopology" />
+        <item index="1" class="java.lang.String" itemvalue="JUnit.KafkaLocalBroker" />
+        <item index="2" class="java.lang.String" itemvalue="Application.AvroConsumer" />
+        <item index="3" class="java.lang.String" itemvalue="JUnit.KafkaLocalBroker.simpleTest" />
+        <item index="4" class="java.lang.String" itemvalue="JUnit.KafkaLocalBroker.test" />
       </list>
     </recent_temporary>
     <configuration name="&lt;template&gt;" type="WebApp" default="true" selected="false">
@@ -1058,12 +1078,12 @@
       <workItem from="1440612974326" duration="49000" />
       <workItem from="1440613024727" duration="324000" />
       <workItem from="1440622918776" duration="1396000" />
-      <workItem from="1440632650399" duration="7064000" />
+      <workItem from="1440632650399" duration="12451000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="33965000" />
+    <option name="totallyTimeSpent" value="39352000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1440" height="900" extended-state="0" />
@@ -1092,7 +1112,7 @@
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.16237482" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.045779686" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.55472636" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.5124378" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
@@ -1122,44 +1142,12 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/pom.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="4395">
-          <caret line="140" column="17" selection-start-line="140" selection-start-column="17" selection-end-line="140" selection-end-column="17" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/nventdata/task/flink/FlinkKafkaTopology.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="1017" max-vertical-offset="2655">
-          <caret line="101" column="41" selection-start-line="101" selection-start-column="41" selection-end-line="101" selection-end-column="41" />
-          <folding>
-            <element signature="e#2558#3343#0" expanded="true" />
-            <element signature="e#2735#2743#0" expanded="true" />
-            <element signature="e#3332#3333#0" expanded="true" />
-            <element signature="e#4440#4455#0" expanded="true" />
-            <element signature="e#5681#5696#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/nventdata/task/flink/AvroClicksSessionizer.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="1290" max-vertical-offset="2610">
-          <caret line="86" column="52" selection-start-line="86" selection-start-column="52" selection-end-line="86" selection-end-column="52" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/nventdata/task/flink/ex/AvroConsumer.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="720" max-vertical-offset="1965">
           <caret line="48" column="21" selection-start-line="48" selection-start-column="21" selection-end-line="48" selection-end-column="21" />
           <folding>
-            <element signature="e#1197#1198#0" expanded="true" />
-            <element signature="e#1222#1223#0" expanded="true" />
-            <element signature="e#1996#2011#0" expanded="true" />
-            <element signature="e#3229#3246#0" expanded="true" />
+            <element signature="e#0#4200#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1177,11 +1165,15 @@
         <state vertical-scroll-proportion="0.0" vertical-offset="1017" max-vertical-offset="2655">
           <caret line="101" column="41" selection-start-line="101" selection-start-column="41" selection-end-line="101" selection-end-column="41" />
           <folding>
-            <element signature="e#2558#3343#0" expanded="true" />
-            <element signature="e#2735#2743#0" expanded="true" />
-            <element signature="e#3332#3333#0" expanded="true" />
-            <element signature="e#4440#4455#0" expanded="true" />
-            <element signature="e#5681#5696#0" expanded="true" />
+            <element signature="e#0#6558#0" expanded="true" />
+            <element signature="imports" expanded="true" />
+            <element signature="e#2560#3345#0" expanded="true" />
+            <element signature="e#2737#2745#0" expanded="true" />
+            <element signature="e#3334#3335#0" expanded="true" />
+            <element signature="e#4442#4457#0" expanded="true" />
+            <element signature="e#5213#5214#0" expanded="true" />
+            <element signature="e#5266#5267#0" expanded="true" />
+            <element signature="e#5683#5698#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1198,10 +1190,7 @@
         <state vertical-scroll-proportion="0.0" vertical-offset="720" max-vertical-offset="1965">
           <caret line="48" column="21" selection-start-line="48" selection-start-column="21" selection-end-line="48" selection-end-column="21" />
           <folding>
-            <element signature="e#1197#1198#0" expanded="true" />
-            <element signature="e#1222#1223#0" expanded="true" />
-            <element signature="e#1996#2011#0" expanded="true" />
-            <element signature="e#3229#3246#0" expanded="true" />
+            <element signature="e#0#4200#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1219,11 +1208,15 @@
         <state vertical-scroll-proportion="0.0" vertical-offset="60" max-vertical-offset="3165">
           <caret line="19" column="0" selection-start-line="19" selection-start-column="0" selection-end-line="42" selection-end-column="27" />
           <folding>
-            <element signature="e#2558#3343#0" expanded="true" />
-            <element signature="e#2735#2743#0" expanded="true" />
-            <element signature="e#3332#3333#0" expanded="true" />
-            <element signature="e#4440#4455#0" expanded="true" />
-            <element signature="e#5681#5696#0" expanded="true" />
+            <element signature="e#0#6558#0" expanded="true" />
+            <element signature="imports" expanded="true" />
+            <element signature="e#2560#3345#0" expanded="true" />
+            <element signature="e#2737#2745#0" expanded="true" />
+            <element signature="e#3334#3335#0" expanded="true" />
+            <element signature="e#4442#4457#0" expanded="true" />
+            <element signature="e#5213#5214#0" expanded="true" />
+            <element signature="e#5266#5267#0" expanded="true" />
+            <element signature="e#5683#5698#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1241,11 +1234,15 @@
         <state vertical-scroll-proportion="0.0" vertical-offset="1140" max-vertical-offset="3510">
           <caret line="76" column="62" selection-start-line="76" selection-start-column="62" selection-end-line="76" selection-end-column="62" />
           <folding>
-            <element signature="e#2558#3343#0" expanded="true" />
-            <element signature="e#2735#2743#0" expanded="true" />
-            <element signature="e#3332#3333#0" expanded="true" />
-            <element signature="e#4440#4455#0" expanded="true" />
-            <element signature="e#5681#5696#0" expanded="true" />
+            <element signature="e#0#6558#0" expanded="true" />
+            <element signature="imports" expanded="true" />
+            <element signature="e#2560#3345#0" expanded="true" />
+            <element signature="e#2737#2745#0" expanded="true" />
+            <element signature="e#3334#3335#0" expanded="true" />
+            <element signature="e#4442#4457#0" expanded="true" />
+            <element signature="e#5213#5214#0" expanded="true" />
+            <element signature="e#5266#5267#0" expanded="true" />
+            <element signature="e#5683#5698#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1263,11 +1260,15 @@
         <state vertical-scroll-proportion="0.0" vertical-offset="510" max-vertical-offset="3180">
           <caret line="49" column="0" selection-start-line="49" selection-start-column="0" selection-end-line="49" selection-end-column="0" />
           <folding>
-            <element signature="e#2558#3343#0" expanded="true" />
-            <element signature="e#2735#2743#0" expanded="true" />
-            <element signature="e#3332#3333#0" expanded="true" />
-            <element signature="e#4440#4455#0" expanded="true" />
-            <element signature="e#5681#5696#0" expanded="true" />
+            <element signature="e#0#6558#0" expanded="true" />
+            <element signature="imports" expanded="true" />
+            <element signature="e#2560#3345#0" expanded="true" />
+            <element signature="e#2737#2745#0" expanded="true" />
+            <element signature="e#3334#3335#0" expanded="true" />
+            <element signature="e#4442#4457#0" expanded="true" />
+            <element signature="e#5213#5214#0" expanded="true" />
+            <element signature="e#5266#5267#0" expanded="true" />
+            <element signature="e#5683#5698#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1285,11 +1286,15 @@
         <state vertical-scroll-proportion="0.0" vertical-offset="1530" max-vertical-offset="2715">
           <caret line="102" column="10" selection-start-line="102" selection-start-column="10" selection-end-line="102" selection-end-column="10" />
           <folding>
-            <element signature="e#2558#3343#0" expanded="true" />
-            <element signature="e#2735#2743#0" expanded="true" />
-            <element signature="e#3332#3333#0" expanded="true" />
-            <element signature="e#4440#4455#0" expanded="true" />
-            <element signature="e#5681#5696#0" expanded="true" />
+            <element signature="e#0#6558#0" expanded="true" />
+            <element signature="imports" expanded="true" />
+            <element signature="e#2560#3345#0" expanded="true" />
+            <element signature="e#2737#2745#0" expanded="true" />
+            <element signature="e#3334#3335#0" expanded="true" />
+            <element signature="e#4442#4457#0" expanded="true" />
+            <element signature="e#5213#5214#0" expanded="true" />
+            <element signature="e#5266#5267#0" expanded="true" />
+            <element signature="e#5683#5698#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1307,11 +1312,15 @@
         <state vertical-scroll-proportion="0.0" vertical-offset="1530" max-vertical-offset="2715">
           <caret line="102" column="10" selection-start-line="102" selection-start-column="10" selection-end-line="102" selection-end-column="10" />
           <folding>
-            <element signature="e#2558#3343#0" expanded="true" />
-            <element signature="e#2735#2743#0" expanded="true" />
-            <element signature="e#3332#3333#0" expanded="true" />
-            <element signature="e#4440#4455#0" expanded="true" />
-            <element signature="e#5681#5696#0" expanded="true" />
+            <element signature="e#0#6558#0" expanded="true" />
+            <element signature="imports" expanded="true" />
+            <element signature="e#2560#3345#0" expanded="true" />
+            <element signature="e#2737#2745#0" expanded="true" />
+            <element signature="e#3334#3335#0" expanded="true" />
+            <element signature="e#4442#4457#0" expanded="true" />
+            <element signature="e#5213#5214#0" expanded="true" />
+            <element signature="e#5266#5267#0" expanded="true" />
+            <element signature="e#5683#5698#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1329,11 +1338,15 @@
         <state vertical-scroll-proportion="0.0" vertical-offset="1530" max-vertical-offset="2715">
           <caret line="102" column="10" selection-start-line="102" selection-start-column="10" selection-end-line="102" selection-end-column="10" />
           <folding>
-            <element signature="e#2558#3343#0" expanded="true" />
-            <element signature="e#2735#2743#0" expanded="true" />
-            <element signature="e#3332#3333#0" expanded="true" />
-            <element signature="e#4440#4455#0" expanded="true" />
-            <element signature="e#5681#5696#0" expanded="true" />
+            <element signature="e#0#6558#0" expanded="true" />
+            <element signature="imports" expanded="true" />
+            <element signature="e#2560#3345#0" expanded="true" />
+            <element signature="e#2737#2745#0" expanded="true" />
+            <element signature="e#3334#3335#0" expanded="true" />
+            <element signature="e#4442#4457#0" expanded="true" />
+            <element signature="e#5213#5214#0" expanded="true" />
+            <element signature="e#5266#5267#0" expanded="true" />
+            <element signature="e#5683#5698#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1351,11 +1364,15 @@
         <state vertical-scroll-proportion="0.0" vertical-offset="315" max-vertical-offset="1845">
           <caret line="47" column="13" selection-start-line="47" selection-start-column="13" selection-end-line="47" selection-end-column="13" />
           <folding>
-            <element signature="e#2558#3343#0" expanded="true" />
-            <element signature="e#2735#2743#0" expanded="true" />
-            <element signature="e#3332#3333#0" expanded="true" />
-            <element signature="e#4440#4455#0" expanded="true" />
-            <element signature="e#5681#5696#0" expanded="true" />
+            <element signature="e#0#6558#0" expanded="true" />
+            <element signature="imports" expanded="true" />
+            <element signature="e#2560#3345#0" expanded="true" />
+            <element signature="e#2737#2745#0" expanded="true" />
+            <element signature="e#3334#3335#0" expanded="true" />
+            <element signature="e#4442#4457#0" expanded="true" />
+            <element signature="e#5213#5214#0" expanded="true" />
+            <element signature="e#5266#5267#0" expanded="true" />
+            <element signature="e#5683#5698#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1379,20 +1396,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.10489511" vertical-offset="0" max-vertical-offset="715">
           <caret line="6" column="154" selection-start-line="6" selection-start-column="154" selection-end-line="6" selection-end-column="154" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/org/apache/kafka/kafka_2.10/0.8.2.1/kafka_2.10-0.8.2.1-sources.jar!/kafka/javaapi/consumer/ConsumerConnector.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-0.42335767" vertical-offset="459" max-vertical-offset="870">
-          <caret line="38" column="4" selection-start-line="38" selection-start-column="4" selection-end-line="38" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/org/apache/kafka/kafka_2.10/0.8.2.1/kafka_2.10-0.8.2.1-sources.jar!/kafka/producer/KeyedMessage.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.25104603" vertical-offset="0" max-vertical-offset="717">
-          <caret line="27" column="6" selection-start-line="27" selection-start-column="6" selection-end-line="27" selection-end-column="6" />
         </state>
       </provider>
     </entry>
@@ -1505,26 +1508,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/nventdata/task/flink/KafkaConsumersVerification.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="465">
-          <caret line="14" column="42" selection-start-line="14" selection-start-column="42" selection-end-line="14" selection-end-column="42" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://$MAVEN_REPOSITORY$/org/apache/kafka/kafka_2.10/0.8.2.1/kafka_2.10-0.8.2.1-sources.jar!/kafka/utils/ZkUtils.scala">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.33170733" vertical-offset="134" max-vertical-offset="10875">
           <caret line="49" column="6" selection-start-line="49" selection-start-column="6" selection-end-line="49" selection-end-column="6" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/org/apache/kafka/kafka_2.10/0.8.2.1/kafka_2.10-0.8.2.1-sources.jar!/kafka/admin/AdminUtils.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="3855" max-vertical-offset="5070">
-          <caret line="284" column="14" selection-start-line="284" selection-start-column="14" selection-end-line="284" selection-end-column="14" />
           <folding />
         </state>
       </provider>
@@ -1537,68 +1524,138 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/test/AvroConsumer.java">
+    <entry file="jar://$MAVEN_REPOSITORY$/org/apache/kafka/kafka_2.10/0.8.2.1/kafka_2.10-0.8.2.1-sources.jar!/kafka/serializer/Decoder.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="645" max-vertical-offset="1545">
-          <caret line="100" column="64" selection-start-line="100" selection-start-column="64" selection-end-line="100" selection-end-column="64" />
+        <state vertical-scroll-proportion="0.3324937" vertical-offset="138" max-vertical-offset="645">
+          <caret line="33" column="20" selection-start-line="33" selection-start-column="20" selection-end-line="33" selection-end-column="20" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="jar://$MAVEN_REPOSITORY$/org/apache/kafka/kafka_2.10/0.8.2.1/kafka_2.10-0.8.2.1-sources.jar!/kafka/javaapi/producer/Producer.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.17259787" vertical-offset="23" max-vertical-offset="585">
-          <caret line="25" column="11" selection-start-line="25" selection-start-column="11" selection-end-line="25" selection-end-column="11" />
+        <state vertical-scroll-proportion="0.23529412" vertical-offset="0" max-vertical-offset="585">
+          <caret line="25" column="65" selection-start-line="25" selection-start-column="65" selection-end-line="25" selection-end-column="65" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/nventdata/task/flink/FlinkKafkaTopology.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/nventdata/task/flink/KafkaConsumersVerification.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="1455" max-vertical-offset="2115">
-          <caret line="173" column="5" selection-start-line="144" selection-start-column="4" selection-end-line="173" selection-end-column="5" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="465">
+          <caret line="25" column="0" selection-start-line="25" selection-start-column="0" selection-end-line="25" selection-end-column="0" />
           <folding>
-            <element signature="e#2558#3343#0" expanded="true" />
-            <element signature="e#2735#2743#0" expanded="true" />
-            <element signature="e#3332#3333#0" expanded="true" />
-            <element signature="e#4440#4455#0" expanded="true" />
-            <element signature="e#5681#5696#0" expanded="true" />
+            <element signature="e#0#758#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/org/apache/kafka/kafka_2.10/0.8.2.1/kafka_2.10-0.8.2.1-sources.jar!/kafka/javaapi/consumer/ConsumerConnector.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.44757032" vertical-offset="110" max-vertical-offset="870">
+          <caret line="38" column="4" selection-start-line="38" selection-start-column="4" selection-end-line="38" selection-end-column="4" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/org/apache/kafka/kafka_2.10/0.8.2.1/kafka_2.10-0.8.2.1-sources.jar!/kafka/producer/KeyedMessage.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.46035805" vertical-offset="0" max-vertical-offset="480">
+          <caret line="27" column="6" selection-start-line="27" selection-start-column="6" selection-end-line="27" selection-end-column="6" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/org/apache/kafka/kafka_2.10/0.8.2.1/kafka_2.10-0.8.2.1-sources.jar!/kafka/producer/Producer.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.33152175" vertical-offset="688" max-vertical-offset="1875">
+          <caret line="76" column="0" selection-start-line="76" selection-start-column="0" selection-end-line="76" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/org/apache/kafka/kafka_2.10/0.8.2.1/kafka_2.10-0.8.2.1-sources.jar!/kafka/admin/AdminUtils.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.3325301" vertical-offset="1947" max-vertical-offset="5070">
+          <caret line="169" column="0" selection-start-line="169" selection-start-column="0" selection-end-line="169" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/test/KafkaITCase.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.03846154" vertical-offset="3106" max-vertical-offset="18285">
-          <caret line="222" column="10" selection-start-line="222" selection-start-column="10" selection-end-line="222" selection-end-column="10" />
+        <state vertical-scroll-proportion="-10.5" vertical-offset="4602" max-vertical-offset="18285">
+          <caret line="340" column="26" selection-start-line="340" selection-start-column="23" selection-end-line="340" selection-end-column="26" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/test/MySimpleStringSchema.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="903" max-vertical-offset="1290">
+          <caret line="77" column="46" selection-start-line="77" selection-start-column="46" selection-end-line="77" selection-end-column="46" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#846#861#0" expanded="true" />
+            <element signature="e#1241#1242#0" expanded="true" />
+            <element signature="e#1269#1270#0" expanded="true" />
+            <element signature="e#1978#1993#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/nventdata/task/flink/FlinkKafkaTopology.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="738" max-vertical-offset="2700">
+          <caret line="87" column="8" selection-start-line="87" selection-start-column="8" selection-end-line="87" selection-end-column="22" />
+          <folding>
+            <element signature="e#0#6558#0" expanded="true" />
+            <element signature="imports" expanded="true" />
+            <element signature="e#2560#3345#0" expanded="true" />
+            <element signature="e#2737#2745#0" expanded="true" />
+            <element signature="e#3334#3335#0" expanded="true" />
+            <element signature="e#4442#4457#0" expanded="true" />
+            <element signature="e#5213#5214#0" expanded="true" />
+            <element signature="e#5266#5267#0" expanded="true" />
+            <element signature="e#5683#5698#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/nventdata/task/flink/ex/AvroConsumer.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-1.2164179" vertical-offset="581" max-vertical-offset="1605">
-          <caret line="36" column="5" selection-start-line="36" selection-start-column="5" selection-end-line="36" selection-end-column="5" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="1300" max-vertical-offset="2040">
+          <caret line="114" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="130" selection-end-column="0" />
           <folding>
-            <element signature="e#1197#1198#0" expanded="true" />
-            <element signature="e#1222#1223#0" expanded="true" />
-            <element signature="e#1996#2011#0" expanded="true" />
-            <element signature="e#3229#3246#0" expanded="true" />
+            <element signature="e#0#4200#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/test/AvroConsumer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.47076923" vertical-offset="162" max-vertical-offset="2130">
+          <caret line="21" column="25" selection-start-line="21" selection-start-column="13" selection-end-line="21" selection-end-column="25" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#1033#1034#0" expanded="true" />
+            <element signature="e#1058#1059#0" expanded="true" />
+            <element signature="e#1086#1087#0" expanded="true" />
+            <element signature="e#1114#1115#0" expanded="true" />
+            <element signature="e#2956#2973#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/test/KafkaLocalBroker.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.2761194" vertical-offset="211" max-vertical-offset="5445">
-          <caret line="19" column="45" selection-start-line="19" selection-start-column="45" selection-end-line="19" selection-end-column="45" />
+        <state vertical-scroll-proportion="0.2734375" vertical-offset="485" max-vertical-offset="5640">
+          <caret line="37" column="17" selection-start-line="37" selection-start-column="17" selection-end-line="37" selection-end-column="17" />
           <folding>
-            <element signature="e#4382#4383#0" expanded="true" />
-            <element signature="e#4421#4422#0" expanded="true" />
-            <element signature="e#8562#8594#0" expanded="true" />
-            <element signature="e#9640#9655#0" expanded="true" />
-            <element signature="e#11601#11930#0" expanded="true" />
-            <element signature="e#11919#11920#0" expanded="true" />
+            <element signature="e#9238#9270#0" expanded="true" />
+            <element signature="e#10316#10331#0" expanded="true" />
+            <element signature="e#12277#12606#0" expanded="true" />
+            <element signature="e#12595#12596#0" expanded="true" />
           </folding>
         </state>
       </provider>

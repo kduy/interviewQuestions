@@ -17,7 +17,7 @@
 
 package com.nventdata.task.flink;
 
-import com.nventdata.task.flink.ex.AvroConsumer;
+//import com.nventdata.task.flink.ex.AvroConsumer;
 import org.apache.avro.Schema;
 import org.apache.avro.file.DataFileWriter;
 import org.apache.avro.generic.GenericDatumReader;

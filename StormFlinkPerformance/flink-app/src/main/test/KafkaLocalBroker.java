@@ -21,6 +21,9 @@ import org.apache.curator.test.TestingServer;
 import org.apache.flink.runtime.net.NetUtils;
 
 
+import org.apache.flink.streaming.api.datastream.DataStream;
+import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.connectors.kafka.api.KafkaSource;
 import org.apache.zookeeper.server.ServerConfig;
 import org.apache.zookeeper.server.ZooKeeperServerMain;
 import org.apache.zookeeper.server.quorum.QuorumPeerConfig;
@@ -109,12 +112,12 @@ public class KafkaLocalBroker {
         cProps.setProperty("group.id", "flink-test");
         cProps.setProperty("auto.commit.enable", "false");
         cProps.setProperty("auto.offset.reset", "smallest");
-        
+
         standardCC = new ConsumerConfig(cProps);
         zkClient = new ZkClient(standardCC.zkConnect(), standardCC.zkSessionTimeoutMs(), standardCC.zkConnectionTimeoutMs(), new MyKafkaZKStringSerializer());
     }
 
-    @AfterClass
+    //@AfterClass
     public static void shutDownServices() {
         LOG.info("Shutdown all services");
         broker.shutdown();
@@ -128,36 +131,33 @@ public class KafkaLocalBroker {
         zkClient.close();
     }
 
-    @Test
-    public  void simpleTest() {
-        Assert.assertTrue(true);
-    }
     
     @Test
     public  void testTopology(){
         
         // create topic
-        String [] topics = new String [] {"neverwinter", "random1", "random2", "random3"};
+        String [] topics = new String [] {"neverwinter2", "random1", "random2", "random3"};
         for (String topic : topics) {
             createTestTopic(topic,1, 1);
         }
         
         // avro producer
-        
+
+        String avroSchemaFileName = "/tmp/message.avsc";// props.getProperty("avro.schema.file");
+        String topic = "neverwinter" ; //props.getProperty("kafka.topic");
+
 
         try	{
 //          Properties props = new Properties();
 //          props.load(new BufferedInputStream(new FileInputStream(configuration)));
-            
-            String avroSchemaFileName = "/tmp/message.avsc";// props.getProperty("avro.schema.file");
-            String topic = "neverwinter" ; //props.getProperty("kafka.topic");
 
             // schema file
-            File avroSchemaFile = new File(avroSchemaFileName);
+            //File avroSchemaFile = new File(avroSchemaFileName);
 
             Properties props = new Properties();
             props.setProperty("metadata.broker.list", brokerConnectionString);
-            System.out.println("------------"+brokerConnectionString);
+            
+            System.out.println("------brokerConnectionString------"+brokerConnectionString);
 
             ProducerConfig config = new ProducerConfig(props);
 
@@ -173,13 +173,12 @@ public class KafkaLocalBroker {
             /*for (int n = 1;n <= 4 ; n++){
                 System.out.print(avroRecord[n]);
             }
-            System.out.println();*/
-
+            System.out.println();
+*/
             //Send message to kafka brokers
             KeyedMessage<String, byte[]> data = new KeyedMessage<String, byte[]>(topic, avroRecord);
             producer.send(data);
 
-            System.out.println();
             producer.close();
         }
         catch (IOException e)
@@ -188,12 +187,26 @@ public class KafkaLocalBroker {
         }
         
         // process
-        
-        
+       /* StreamExecutionEnvironment env = StreamExecutionEnvironment.createLocalEnvironment().setParallelism(4);
+
+        DataStream<String> kafkaStream = env
+                .addSource(new KafkaSource<String>(brokerConnectionString, topic, new MySimpleStringSchema()));
+
+
+        kafkaStream.print();
+        try {
+            env.execute();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+*/
+
         // avro consumer
         
-        
-        
+        AvroConsumer consumer = new AvroConsumer();
+        System.out.println("-----zkConnectionString2-----"+ zkConnectionString);
+        consumer.countMessage(topic, zkConnectionString);;
+
     }
     
     private void createTestTopic (String topic, int numOfPartitions, int replicationFactor){

@@ -1,3 +1,4 @@
+/*
 package com.nventdata.task.flink.ex;
 
 
@@ -95,17 +96,23 @@ public class AvroConsumer {
     private void start(String topic) {
         consumer = Consumer.createJavaConsumerConnector(config);
 
-        /* We tell Kafka how many threads will read each topic. We have one topic and one thread */
+        */
+/* We tell Kafka how many threads will read each topic. We have one topic and one thread *//*
+
         Map<String, Integer> topicCountMap = new HashMap<String, Integer>();
         topicCountMap.put(topic,new Integer(1));
 
-        /* We will use a decoder to get Kafka to convert messages to Strings
+        */
+/* We will use a decoder to get Kafka to convert messages to Strings
         * valid property will be deserializer.encoding with the charset to use.
-        * default is UTF8 which works for us */
+        * default is UTF8 which works for us *//*
+
         DefaultDecoder decoder = new DefaultDecoder(new VerifiableProperties());
 
-        /* Kafka will give us a list of streams of messages for each topic.
-        In this case, its just one topic with a list of a single stream */
+        */
+/* Kafka will give us a list of streams of messages for each topic.
+        In this case, its just one topic with a list of a single stream *//*
+
         stream = consumer.createMessageStreams(topicCountMap, decoder, decoder).get(topic).get(0);
 
     }
@@ -120,4 +127,4 @@ public class AvroConsumer {
             return null;
         }
     }
-}
+}*/
