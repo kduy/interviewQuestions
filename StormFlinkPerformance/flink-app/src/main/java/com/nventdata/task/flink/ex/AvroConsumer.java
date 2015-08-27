@@ -58,7 +58,7 @@ public class AvroConsumer {
 
         configure(zkUrl, groupId);
 
-        start(topic);
+            start(topic);
 
         while ((next = getNextMessage()) != null) {
             try {
