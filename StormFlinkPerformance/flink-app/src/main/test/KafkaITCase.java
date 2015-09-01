@@ -13,7 +13,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *//*
+ */
 
 
 
@@ -87,13 +87,13 @@ import org.slf4j.LoggerFactory;
 
 import scala.collection.Seq;
 
-*/
+
 /**
  * Code in this test is based on the following GitHub repository:
  * (as per commit bc6b2b2d5f6424d5f377aa6c0871e82a956462ef)
  * <p/>
  * https://github.com/sakserv/hadoop-mini-clusters (ASL licensed)
- *//*
+ */
 
 
 public class KafkaITCase {
@@ -189,7 +189,8 @@ public class KafkaITCase {
 	}
 
 	// --------------------------  test checkpointing ------------------------
-	@Test
+	/*@Test 
+	@Ignore
 	public void testCheckpointing() throws Exception {
 		createTestTopic("testCheckpointing", 1, 1);
 
@@ -243,7 +244,7 @@ public class KafkaITCase {
 		source.notifyCheckpointComplete(499);
 		Assert.assertEquals(0, pendingCheckpoints.size());
 	}
-
+    */
 
 	private static class FakeDeserializationSchema implements DeserializationSchema<String> {
 
@@ -266,24 +267,23 @@ public class KafkaITCase {
 	// ---------------------------------------------------------------
 
 
-	@Test
-	public void testOffsetManipulation() {
-		ZkClient zk = new ZkClient(standardCC.zkConnect(), standardCC.zkSessionTimeoutMs(), standardCC.zkConnectionTimeoutMs(), new PersistentKafkaSource.KafkaZKStringSerializer());
+    public void testOffsetManipulation() {
+        ZkClient zk = new ZkClient(standardCC.zkConnect(), standardCC.zkSessionTimeoutMs(), standardCC.zkConnectionTimeoutMs(), new PersistentKafkaSource.KafkaZKStringSerializer());
 
-		final String topicName = "testOffsetManipulation";
+        final String topicName = "testOffsetManipulation";
 
-		// create topic
-		Properties topicConfig = new Properties();
-		LOG.info("Creating topic {}", topicName);
-		AdminUtils.createTopic(zk, topicName, 3, 2, topicConfig);
+        // create topic
+        Properties topicConfig = new Properties();
+        LOG.info("Creating topic {}", topicName);
+        AdminUtils.createTopic(zk, topicName, 3, 2, topicConfig);
 
-		PersistentKafkaSource.setOffset(zk, standardCC.groupId(), topicName, 0, 1337);
+        PersistentKafkaSource.setOffset(zk, standardCC.groupId(), topicName, 0, 1337);
 
-		Assert.assertEquals(1337L, PersistentKafkaSource.getOffset(zk, standardCC.groupId(), topicName, 0));
+        Assert.assertEquals(1337L, PersistentKafkaSource.getOffset(zk, standardCC.groupId(), topicName, 0));
 
-		zk.close();
-	}
-
+        zk.close();
+    }
+/*
 	public static class TestPersistentKafkaSource<OUT> extends PersistentKafkaSource<OUT> {
 		private static Object sync = new Object();
 		public static long[] finalOffset;
@@ -321,15 +321,16 @@ public class KafkaITCase {
 
         }
     }
+*/
 
-    
-    */
-/**
-	 * We want to use the High level java consumer API but manage the offset in Zookeeper manually.
-	 *
-	 *//*
 
-	@Test
+    /**
+     * We want to use the High level java consumer API but manage the offset in Zookeeper manually.
+     *
+     */
+/*
+	@Test 
+	@Ignore
 	@Ignore
 	public void testPersistentSourceWithOffsetUpdates() throws Exception {
 		LOG.info("Starting testPersistentSourceWithOffsetUpdates()");
@@ -395,7 +396,8 @@ public class KafkaITCase {
 
 		LOG.info("Finished testPersistentSourceWithOffsetUpdates()");
 	}
-
+*/
+/*
 	private void readSequence(StreamExecutionEnvironment env, ConsumerConfig cc, final String topicName, final int valuesStartFrom, final int valuesCount, final int finalCount) throws Exception {
 		LOG.info("Reading sequence for verification until final count {}", finalCount);
 		TestPersistentKafkaSource<Tuple2<Integer, Integer>> pks = new TestPersistentKafkaSource<Tuple2<Integer, Integer>>(topicName, new Utils.TypeInformationSerializationSchema<Tuple2<Integer, Integer>>(new Tuple2<Integer, Integer>(1, 1), env.getConfig()), cc);
@@ -445,135 +447,137 @@ public class KafkaITCase {
 		LOG.info("Successfully read sequence for verification");
 	}
 
+*/
+
+    private void writeSequence(StreamExecutionEnvironment env, String topicName, final int from, final int to) throws Exception {
+        LOG.info("Writing sequence from {} to {} to topic {}", from, to, topicName);
+        DataStream<Tuple2<Integer, Integer>> stream = env.addSource(new RichParallelSourceFunction<Tuple2<Integer, Integer>>() {
+            private static final long serialVersionUID = 1L;
+            boolean running = true;
+
+            @Override
+            public void run(SourceContext<Tuple2<Integer, Integer>> ctx) throws Exception {
+                LOG.info("Starting source.");
+                int cnt = from;
+                int partition = getRuntimeContext().getIndexOfThisSubtask();
+                while (running) {
+                    LOG.info("Writing " + cnt + " to partition " + partition);
+                    ctx.collect(new Tuple2<Integer, Integer>(getRuntimeContext().getIndexOfThisSubtask(),
+                            cnt));
+                    if (cnt == to) {
+                        LOG.info("Writer reached end.");
+                        return;
+                    }
+                    cnt++;
+                }
+            }
+
+            @Override
+            public void cancel() {
+                LOG.info("Source got cancel()");
+                running = false;
+            }
+        }).setParallelism(3);
+        stream.addSink(new KafkaSink<Tuple2<Integer, Integer>>(brokerConnectionStrings,
+                topicName,
+                new Utils.TypeInformationSerializationSchema<Tuple2<Integer, Integer>>(new Tuple2<Integer, Integer>(1, 1), env.getConfig()),
+                new T2Partitioner()
+        )).setParallelism(3);
+        env.execute("Write sequence from " + from + " to " + to + " to topic " + topicName);
+        LOG.info("Finished writing sequence");
+    }
+
+    private static class T2Partitioner implements SerializableKafkaPartitioner {
+        private static final long serialVersionUID = 1L;
+
+        @Override
+        public int partition(Object key, int numPartitions) {
+            if(numPartitions != 3) {
+                throw new IllegalArgumentException("Expected three partitions");
+            }
+            Tuple2<Integer, Integer> element = (Tuple2<Integer, Integer>) key;
+            return element.f0;
+        }
+    }
 
 
-	private void writeSequence(StreamExecutionEnvironment env, String topicName, final int from, final int to) throws Exception {
-		LOG.info("Writing sequence from {} to {} to topic {}", from, to, topicName);
-		DataStream<Tuple2<Integer, Integer>> stream = env.addSource(new RichParallelSourceFunction<Tuple2<Integer, Integer>>() {
-			private static final long serialVersionUID = 1L;
-			boolean running = true;
+    @Test
+    public void regularKafkaSourceTest() throws Exception {
+        LOG.info("Starting KafkaITCase.regularKafkaSourceTest()");
 
-			@Override
-			public void run(SourceContext<Tuple2<Integer, Integer>> ctx) throws Exception {
-				LOG.info("Starting source.");
-				int cnt = from;
-				int partition = getRuntimeContext().getIndexOfThisSubtask();
-				while (running) {
-					LOG.info("Writing " + cnt + " to partition " + partition);
-					ctx.collect(new Tuple2<Integer, Integer>(getRuntimeContext().getIndexOfThisSubtask(),
-							cnt));
-					if (cnt == to) {
-						LOG.info("Writer reached end.");
-						return;
-					}
-					cnt++;
-				}
-			}
+        String topic = "regularKafkaSourceTestTopic";
+        createTestTopic(topic, 1, 1);
 
-			@Override
-			public void cancel() {
-				LOG.info("Source got cancel()");
-				running = false;
-			}
-		}).setParallelism(3);
-		stream.addSink(new KafkaSink<Tuple2<Integer, Integer>>(brokerConnectionStrings,
-				topicName,
-				new Utils.TypeInformationSerializationSchema<Tuple2<Integer, Integer>>(new Tuple2<Integer, Integer>(1, 1), env.getConfig()),
-				new T2Partitioner()
-		)).setParallelism(3);
-		env.execute("Write sequence from " + from + " to " + to + " to topic " + topicName);
-		LOG.info("Finished writing sequence");
-	}
+        final StreamExecutionEnvironment env = StreamExecutionEnvironment.createLocalEnvironment(1);
+        // add consuming topology:
+        DataStreamSource<Tuple2<Long, String>> consuming = env.addSource(
+                new KafkaSource<Tuple2<Long, String>>(zookeeperConnectionString, topic, "myFlinkGroup", new Utils.TypeInformationSerializationSchema<Tuple2<Long, String>>(new Tuple2<Long, String>(1L, ""), env.getConfig()), 5000));
+        consuming.addSink(new SinkFunction<Tuple2<Long, String>>() {
+            private static final long serialVersionUID = 1L;
 
-	private static class T2Partitioner implements SerializableKafkaPartitioner {
-		private static final long serialVersionUID = 1L;
+            int elCnt = 0;
+            int start = -1;
+            BitSet validator = new BitSet(101);
 
-		@Override
-		public int partition(Object key, int numPartitions) {
-			if(numPartitions != 3) {
-				throw new IllegalArgumentException("Expected three partitions");
-			}
-			Tuple2<Integer, Integer> element = (Tuple2<Integer, Integer>) key;
-			return element.f0;
-		}
-	}
+            @Override
+            public void invoke(Tuple2<Long, String> value) throws Exception {
+                LOG.debug("Got value = " + value);
+                String[] sp = value.f1.split("-");
+                int v = Integer.parseInt(sp[1]);
+
+                assertEquals(value.f0 - 1000, (long) v);
+
+                if (start == -1) {
+                    start = v;
+                }
+                Assert.assertFalse("Received tuple twice", validator.get(v - start));
+                validator.set(v - start);
+                elCnt++;
+                if (elCnt == 100) {
+                    // check if everything in the bitset is set to true
+                    int nc;
+                    if ((nc = validator.nextClearBit(0)) != 100) {
+                        throw new RuntimeException("The bitset was not set to 1 on all elements. Next clear:" + nc + " Set: " + validator);
+                    }
+                    throw new SuccessException();
+                }
+            }
+        });
+
+        // add producing topology
+        DataStream<Tuple2<Long, String>> stream = env.addSource(new SourceFunction<Tuple2<Long, String>>() {
+            private static final long serialVersionUID = 1L;
+            boolean running = true;
+
+            @Override
+            public void run(SourceContext<Tuple2<Long, String>> ctx) throws Exception {
+                LOG.info("Starting source.");
+                int cnt = 0;
+                while (running) {
+                    ctx.collect(new Tuple2<Long, String>(1000L + cnt, "kafka-" + cnt++));
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException ignored) {
+                    }
+                }
+            }
+
+            @Override
+            public void cancel() {
+                LOG.info("Source got cancel()");
+                running = false;
+            }
+        });
+        stream.addSink(new KafkaSink<Tuple2<Long, String>>(brokerConnectionStrings, topic, new Utils.TypeInformationSerializationSchema<Tuple2<Long, String>>(new Tuple2<Long, String>(1L, ""), env.getConfig())));
 
 
-	@Test
-	public void regularKafkaSourceTest() throws Exception {
-		LOG.info("Starting KafkaITCase.regularKafkaSourceTest()");
-
-		String topic = "regularKafkaSourceTestTopic";
-		createTestTopic(topic, 1, 1);
-
-		final StreamExecutionEnvironment env = StreamExecutionEnvironment.createLocalEnvironment(1);
-		// add consuming topology:
-		DataStreamSource<Tuple2<Long, String>> consuming = env.addSource(
-				new KafkaSource<Tuple2<Long, String>>(zookeeperConnectionString, topic, "myFlinkGroup", new Utils.TypeInformationSerializationSchema<Tuple2<Long, String>>(new Tuple2<Long, String>(1L, ""), env.getConfig()), 5000));
-		consuming.addSink(new SinkFunction<Tuple2<Long, String>>() {
-			private static final long serialVersionUID = 1L;
-
-			int elCnt = 0;
-			int start = -1;
-			BitSet validator = new BitSet(101);
-
-			@Override
-			public void invoke(Tuple2<Long, String> value) throws Exception {
-				LOG.debug("Got value = " + value);
-				String[] sp = value.f1.split("-");
-				int v = Integer.parseInt(sp[1]);
-
-				assertEquals(value.f0 - 1000, (long) v);
-
-				if (start == -1) {
-					start = v;
-				}
-				Assert.assertFalse("Received tuple twice", validator.get(v - start));
-				validator.set(v - start);
-				elCnt++;
-				if (elCnt == 100) {
-					// check if everything in the bitset is set to true
-					int nc;
-					if ((nc = validator.nextClearBit(0)) != 100) {
-						throw new RuntimeException("The bitset was not set to 1 on all elements. Next clear:" + nc + " Set: " + validator);
-					}
-					throw new SuccessException();
-				}
-			}
-		});
-
-		// add producing topology
-		DataStream<Tuple2<Long, String>> stream = env.addSource(new SourceFunction<Tuple2<Long, String>>() {
-			private static final long serialVersionUID = 1L;
-			boolean running = true;
-
-			@Override
-			public void run(SourceContext<Tuple2<Long, String>> ctx) throws Exception {
-				LOG.info("Starting source.");
-				int cnt = 0;
-				while (running) {
-					ctx.collect(new Tuple2<Long, String>(1000L + cnt, "kafka-" + cnt++));
-					try {
-						Thread.sleep(100);
-					} catch (InterruptedException ignored) {
-					}
-				}
-			}
-
-			@Override
-			public void cancel() {
-				LOG.info("Source got cancel()");
-				running = false;
-			}
-		});
-		stream.addSink(new KafkaSink<Tuple2<Long, String>>(brokerConnectionStrings, topic, new Utils.TypeInformationSerializationSchema<Tuple2<Long, String>>(new Tuple2<Long, String>(1L, ""), env.getConfig())));
-
-		tryExecute(env, "regular kafka source test");
+        		tryExecute(env, "regular kafka source test");
 
 		LOG.info("Finished KafkaITCase.regularKafkaSourceTest()");
 	}
 
-	@Test
+	@Test 
+	@Ignore
 	public void tupleTestTopology() throws Exception {
 		LOG.info("Starting KafkaITCase.tupleTestTopology()");
 
@@ -659,16 +663,17 @@ public class KafkaITCase {
 		LOG.info("Finished KafkaITCase.tupleTestTopology()");
 	}
 
-	*/
+
 /**
 	 * Test Flink's Kafka integration also with very big records (30MB)
 	 *
 	 * see http://stackoverflow.com/questions/21020347/kafka-sending-a-15mb-message
 	 *
 	 * @throws Exception
-	 *//*
+	 */
 
-	@Test
+	@Test 
+	@Ignore
 	public void bigRecordTestTopology() throws Exception {
 
 		LOG.info("Starting KafkaITCase.bigRecordTestTopology()");
@@ -766,7 +771,8 @@ public class KafkaITCase {
 	}
 
 
-	@Test
+	@Test 
+	@Ignore
 	public void customPartitioningTestTopology() throws Exception {
 		LOG.info("Starting KafkaITCase.customPartitioningTestTopology()");
 
@@ -859,10 +865,10 @@ public class KafkaITCase {
 		LOG.info("Finished KafkaITCase.customPartitioningTestTopology()");
 	}
 
-	*/
+
 /**
 	 * This is for a topic with 3 partitions and Tuple2<Long, String>
-	 *//*
+	 */
 
 	private static class CustomPartitioner implements SerializableKafkaPartitioner {
 		private static final long serialVersionUID = 1L;
@@ -883,7 +889,8 @@ public class KafkaITCase {
 	}
 
 
-	@Test
+	@Test 
+	@Ignore
 	public void simpleTestTopology() throws Exception {
 		String topic = "simpleTestTopic";
 
@@ -955,7 +962,8 @@ public class KafkaITCase {
 	private static boolean leaderHasShutDown = false;
 	private static boolean shutdownKafkaBroker;
 
-	@Test(timeout=60000)
+	@Test 
+	@Ignore//(timeout=60000)
 	public void brokerFailureTest() throws Exception {
 		String topic = "brokerFailureTestTopic";
 
@@ -1131,10 +1139,10 @@ public class KafkaITCase {
 		return new TestingServer(zkPort, tmpZkDir);
 	}
 
-	*/
+
 /**
 	 * Copied from com.github.sakserv.minicluster.KafkaLocalBrokerIntegrationTest (ASL licensed)
-	 *//*
+	 */
 
 	private static KafkaServer getKafkaServer(int brokerId, File tmpFolder) throws UnknownHostException {
 		Properties kafkaProperties = new Properties();
@@ -1163,11 +1171,11 @@ public class KafkaITCase {
 
 	// ----------------------- Debugging utilities --------------------
 
-	*/
+	
 /**
 	 * Read topic to list, only using Kafka code.
 	 * @return
-	 *//*
+	 */
 
 	private static List<MessageAndMetadata<byte[], byte[]>> readTopicToList(String topicName, ConsumerConfig config, final int stopAfter) {
 		ConsumerConnector consumerConnector = Consumer.createJavaConsumerConnector(config);
@@ -1225,4 +1233,4 @@ public class KafkaITCase {
 
 }
 
-*/
+

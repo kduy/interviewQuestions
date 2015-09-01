@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package com.nventdata.task.flink;
+package com.nventdata.task.flink.performance;
 
 //import com.nventdata.task.flink.ex.AvroConsumer;
 import org.apache.avro.Schema;
@@ -46,6 +46,8 @@ public class FlinkKafkaTopology {
     private static String host;
     private static int port;
     private static String topic;
+    static final PerformanceCounter perfCounter = new PerformanceCounter("flink",10,10,10, "flink");
+
 
     public static void main(String[] args) throws Exception {
 
@@ -55,13 +57,16 @@ public class FlinkKafkaTopology {
 
         StreamExecutionEnvironment env = StreamExecutionEnvironment.createLocalEnvironment().setParallelism(4);
 
+
+
         DataStream<String> kafkaStream = env
                 .addSource(new KafkaSource<String>(host + ":" + port, topic, new MySimpleStringSchema()));
 
         SplitDataStream<String> splitStream = kafkaStream.split(new OutputSelector<String>() {
+
+
             @Override
-            public Iterable<
-            String> select(String value) {
+            public Iterable<String> select(String value) {
                 List<String> outputs = new ArrayList<String>();
                 JSONObject jsonObject = new JSONObject(value.trim());
                 int randomField = jsonObject.getInt("random");
@@ -111,7 +116,7 @@ class MySimpleStringSchema implements SerializationSchema<String, byte[]> , Dese
     @Override
     public String deserialize(byte[] message) {
         try {
-            Schema _schema = new Schema.Parser().parse(new File("/tmp/message.avsc"));
+            Schema _schema = new Schema.Parser().parse(new File("/Users/kidio/message.avsc"));
             DatumReader<GenericRecord> reader = new GenericDatumReader<GenericRecord>(_schema);
             Decoder decoder = DecoderFactory.get().binaryDecoder(message, null);
             GenericRecord result = reader.read(null, decoder);
@@ -131,7 +136,10 @@ class MySimpleStringSchema implements SerializationSchema<String, byte[]> , Dese
     public byte[] serialize(String element) {
         //return  element.getBytes();
         try {
+            
+            FlinkKafkaTopology.perfCounter.count();
             return jsonToAvro(element, "/Users/kidio/message.avsc");
+            
         } catch (IOException e) {
             e.printStackTrace();
         }

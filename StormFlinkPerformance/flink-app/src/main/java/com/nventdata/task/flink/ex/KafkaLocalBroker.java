@@ -1,37 +1,28 @@
+package com.nventdata.task.flink.ex;
+
 import junit.framework.Assert;
 import kafka.admin.AdminUtils;
 import kafka.consumer.ConsumerConfig;
-import kafka.message.Message;
+import kafka.javaapi.producer.Producer;
 import kafka.network.SocketServer;
 import kafka.producer.KeyedMessage;
+import kafka.producer.ProducerConfig;
 import kafka.server.KafkaConfig;
 import kafka.server.KafkaServer;
 import kafka.utils.Time;
-import kafka.utils.VerifiableProperties;
 import org.I0Itec.zkclient.ZkClient;
 import org.I0Itec.zkclient.exception.ZkMarshallingError;
 import org.I0Itec.zkclient.serialize.ZkSerializer;
 import org.apache.avro.Schema;
+import org.apache.avro.generic.GenericData.Record;
 import org.apache.avro.generic.GenericDatumReader;
 import org.apache.avro.generic.GenericDatumWriter;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.avro.io.*;
-import org.apache.avro.specific.SpecificDatumWriter;
 import org.apache.curator.test.TestingServer;
 import org.apache.flink.runtime.client.JobExecutionException;
 import org.apache.flink.runtime.net.NetUtils;
-
-
-import org.apache.flink.streaming.api.datastream.DataStream;
-import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.streaming.api.functions.sink.SinkFunction;
-import org.apache.flink.streaming.api.functions.source.SourceFunction;
-import org.apache.flink.streaming.connectors.kafka.api.KafkaSink;
-import org.apache.flink.streaming.connectors.kafka.api.KafkaSource;
-import org.apache.flink.streaming.connectors.kafka.api.persistent.PersistentKafkaSource;
-import org.apache.flink.streaming.util.serialization.JavaDefaultStringSchema;
-import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.zookeeper.server.ServerConfig;
 import org.apache.zookeeper.server.ZooKeeperServerMain;
 import org.apache.zookeeper.server.quorum.QuorumPeerConfig;
@@ -44,19 +35,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.net.InetAddress;
 import java.net.ServerSocket;
-import java.util.BitSet;
 import java.util.Properties;
-
-
-
-
-import kafka.javaapi.producer.Producer;
-import kafka.producer.ProducerConfig;
-
-import org.apache.avro.generic.GenericData.Record;
-import org.apache.avro.generic.IndexedRecord;
 
 
 public class KafkaLocalBroker {
@@ -272,10 +252,10 @@ public class KafkaLocalBroker {
 
 //            producer.close();
 
-            AvroConsumer consumer = new AvroConsumer();
-            System.out.println("-----zkConnectionString2-----"+ zkConnectionString);
-            consumer.countMessage(topic, zkConnectionString, "flink-test");
-            System.out.println("----count----"+ consumer.getCount());
+//            AvroConsumer consumer = new AvroConsumer();
+//            System.out.println("-----zkConnectionString2-----"+ zkConnectionString);
+//            consumer.countMessage(topic, zkConnectionString, "flink-test");
+//            System.out.println("----count----"+ consumer.getCount());
 
 /*
 

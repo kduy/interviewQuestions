@@ -1,4 +1,4 @@
-/*
+
 package com.nventdata.task.flink.ex;
 
 
@@ -39,9 +39,8 @@ public class AvroConsumer {
     
     public static void main (String [] args){
         AvroConsumer consumer = new AvroConsumer();
-        consumer.countMessage("random1");
+        consumer.countMessage("neverwinter");
         System.out.println("--------------"+consumer.getCount());
-
     }
     
     public int getCount(){
@@ -55,7 +54,7 @@ public class AvroConsumer {
         String zkUrl = "localhost:2181";
         String groupId = "group1";
         
-        waitTime = "10000";
+        waitTime = "1000";
 
         configure(zkUrl, groupId);
 
@@ -96,22 +95,22 @@ public class AvroConsumer {
     private void start(String topic) {
         consumer = Consumer.createJavaConsumerConnector(config);
 
-        */
-/* We tell Kafka how many threads will read each topic. We have one topic and one thread *//*
+
+/* We tell Kafka how many threads will read each topic. We have one topic and one thread */
 
         Map<String, Integer> topicCountMap = new HashMap<String, Integer>();
         topicCountMap.put(topic,new Integer(1));
 
-        */
+
 /* We will use a decoder to get Kafka to convert messages to Strings
         * valid property will be deserializer.encoding with the charset to use.
-        * default is UTF8 which works for us *//*
+        * default is UTF8 which works for us */
 
         DefaultDecoder decoder = new DefaultDecoder(new VerifiableProperties());
 
-        */
+
 /* Kafka will give us a list of streams of messages for each topic.
-        In this case, its just one topic with a list of a single stream *//*
+        In this case, its just one topic with a list of a single stream */
 
         stream = consumer.createMessageStreams(topicCountMap, decoder, decoder).get(topic).get(0);
 
@@ -127,4 +126,4 @@ public class AvroConsumer {
             return null;
         }
     }
-}*/
+}

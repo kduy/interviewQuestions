@@ -19,6 +19,7 @@ public class MySimpleStringSchema implements SerializationSchema<String, byte[]>
             DatumReader<GenericRecord> reader = new GenericDatumReader<GenericRecord>(_schema);
             Decoder decoder = DecoderFactory.get().binaryDecoder(message, null);
             GenericRecord result = reader.read(null, decoder);
+            System.out.println(result.toString());
             return result.toString();
         } catch (IOException e) {
             e.printStackTrace();
