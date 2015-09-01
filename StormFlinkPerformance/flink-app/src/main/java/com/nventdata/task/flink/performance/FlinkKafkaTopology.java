@@ -46,7 +46,7 @@ public class FlinkKafkaTopology {
     private static String host;
     private static int port;
     private static String topic;
-    static final PerformanceCounter perfCounter = new PerformanceCounter("flink",10,10,10, "flink");
+    static final PerformanceCounter perfCounter = new PerformanceCounter("flink",100,100,100, "flink");
 
 
     public static void main(String[] args) throws Exception {

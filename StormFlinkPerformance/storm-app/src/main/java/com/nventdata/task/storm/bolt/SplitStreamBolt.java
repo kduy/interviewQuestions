@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
+import com.nventdata.task.storm.performance.PerformanceCounter;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericDatumReader;
 import org.apache.avro.generic.GenericDatumWriter;
@@ -35,6 +36,9 @@ import backtype.storm.tuple.Values;
  *
  */
 public class SplitStreamBolt extends BaseBasicBolt {
+    
+    PerformanceCounter perfCounter = new PerformanceCounter("storm", 100, 100, 100, "storm");
+    
     @Override
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
     	declarer.declareStream("random1", new Fields("random1", "message"));
@@ -50,6 +54,7 @@ public class SplitStreamBolt extends BaseBasicBolt {
 
         String json = tuple.getStringByField("avro");
         //System.out.println(jsonToAvro(json));
+        perfCounter.count();
     	collector.emit (randomField, new Values(randomField,jsonToAvro(json)));
     }
 
