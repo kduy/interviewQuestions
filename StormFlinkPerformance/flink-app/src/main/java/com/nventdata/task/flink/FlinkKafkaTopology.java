@@ -108,14 +108,27 @@ public class FlinkKafkaTopology {
 
 class MySimpleStringSchema implements SerializationSchema<String, byte[]> , DeserializationSchema<String>  {
     
-
+    static final File schemaFile = new File("/Users/kidio/message.avsc");
+    static final String schemaStr = "{" +
+            " \"name\": \"kafkatest\"," +
+            " \"namespace\": \"test\"," +
+            " \"type\": \"record\"," +
+            " \"fields\": [" +
+            " {\"name\": \"id\", \"type\": \"int\"}," +
+            " {\"name\": \"random\", \"type\": \"int\"}," +
+            " {\"name\": \"data\", \"type\": \"string\"}" +
+            " ]" +
+            " }";
+    
+    
     @Override
     public String deserialize(byte[] message) {
         try {
-            Schema _schema = new Schema.Parser().parse(new File("/Users/kidio/message.avsc"));
+            Schema _schema = new Schema.Parser().parse(schemaStr);
             DatumReader<GenericRecord> reader = new GenericDatumReader<GenericRecord>(_schema);
             Decoder decoder = DecoderFactory.get().binaryDecoder(message, null);
             GenericRecord result = reader.read(null, decoder);
+
             return result.toString().trim();
         } catch (IOException e) {
             e.printStackTrace();
@@ -132,7 +145,7 @@ class MySimpleStringSchema implements SerializationSchema<String, byte[]> , Dese
     public byte[] serialize(String element) {
         //return  element.getBytes();
         try {
-            return jsonToAvro(element, "/Users/kidio/message.avsc");
+            return jsonToAvro(element, schemaStr);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -143,13 +156,13 @@ class MySimpleStringSchema implements SerializationSchema<String, byte[]> , Dese
         return BasicTypeInfo.STRING_TYPE_INFO;
     }
 
-    public static byte[] jsonToAvro(String json, String filePath) throws IOException {
+    public static byte[] jsonToAvro(String json, String schemaStr) throws IOException {
         InputStream input = null;
         GenericDatumWriter<GenericRecord> writer = null;
         Encoder encoder = null;
         ByteArrayOutputStream output = null;
         try {
-            Schema schema = new Schema.Parser().parse(new File(filePath));
+            Schema schema = new Schema.Parser().parse(schemaStr);
             DatumReader<GenericRecord> reader = new GenericDatumReader<GenericRecord>(schema);
             input = new ByteArrayInputStream(json.getBytes());
             output = new ByteArrayOutputStream();
