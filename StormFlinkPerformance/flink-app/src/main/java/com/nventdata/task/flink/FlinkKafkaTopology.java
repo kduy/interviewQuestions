@@ -18,6 +18,7 @@
 package com.nventdata.task.flink;
 
 //import com.nventdata.task.flink.ex.AvroConsumer;
+import com.nventdata.task.flink.performance.PerformanceCounter;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericDatumReader;
 import org.apache.avro.generic.GenericDatumWriter;
@@ -126,7 +127,10 @@ public class FlinkKafkaTopology {
 }
 
 class MySimpleStringSchema implements SerializationSchema<String, byte[]> , DeserializationSchema<String>  {
-    
+
+    PerformanceCounter perfCounter = new PerformanceCounter("flink", 100, 100, 100, "flink");
+
+
     private String schemaStr;
     /*static final String schemaStr = "{" +
             " \"name\": \"kafkatest\"," +
@@ -163,8 +167,10 @@ class MySimpleStringSchema implements SerializationSchema<String, byte[]> , Dese
             DatumReader<GenericRecord> reader = new GenericDatumReader<GenericRecord>(_schema);
             Decoder decoder = DecoderFactory.get().binaryDecoder(message, null);
             GenericRecord result = reader.read(null, decoder);
+            
+            perfCounter.count();
 
-            return result.toString().trim();
+            return result.toString();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -178,7 +184,6 @@ class MySimpleStringSchema implements SerializationSchema<String, byte[]> , Dese
 
     @Override
     public byte[] serialize(String element) {
-        //return  element.getBytes();
         try {
             return jsonToAvro(element, schemaStr);
         } catch (IOException e) {

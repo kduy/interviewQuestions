@@ -1,5 +1,5 @@
 
-package com.nventdata.task.flink.ex;
+package com.nventdata.task.flink;
 
 
         import kafka.consumer.*;
@@ -12,18 +12,17 @@ package com.nventdata.task.flink.ex;
         import org.apache.avro.io.DatumReader;
         import org.apache.avro.io.Decoder;
         import org.apache.avro.io.DecoderFactory;
+        import org.json.JSONObject;
         import org.slf4j.Logger;
         import org.slf4j.LoggerFactory;
 
-        import java.io.BufferedWriter;
         import java.io.File;
-        import java.io.FileWriter;
         import java.io.IOException;
         import java.util.HashMap;
         import java.util.Map;
         import java.util.Properties;
 
-public class AvroConsumer {
+public class AvroConsumer  implements Runnable{
 
     public static Logger LOG = LoggerFactory.getLogger(AvroConsumer.class);
     private Properties kafkaProps = new Properties();
@@ -32,29 +31,53 @@ public class AvroConsumer {
     private KafkaStream<byte[], byte[]> stream;
     private String waitTime;
     private int count;
+    private String topic;
+
+
+    public static int total = 0;
     
-    public AvroConsumer(){
+    public AvroConsumer(String topic){
+        
+        
+        this.topic = topic;
         count = 0;
     }
     
     public static void main (String [] args){
-        AvroConsumer consumer = new AvroConsumer();
-        consumer.countMessage("neverwinter");
-        System.out.println("--------------"+consumer.getCount());
+        Thread t1 = (new Thread(new AvroConsumer("random1")));
+        Thread t2 = (new Thread(new AvroConsumer("random2")));
+        Thread t3 = (new Thread(new AvroConsumer("random3")));
+        t1.start();
+        t2.start();
+        t3.start();
+        
+        try {
+            t1.join();
+            t2.join();
+            t3.join();
+            
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        
+
+        System.out.println(AvroConsumer.total);
+
+        System.out.println("Done !!!");
     }
     
-    public int getCount(){
+    public int  getCount(){
         return count;
     }
     
-    public  void countMessage(String topic) {
+    public  void countMessage() throws Exception {
 
         byte[] next;
         
-        String zkUrl = "localhost:2181";
+        String zkUrl = "192.168.99.100:2181";
         String groupId = "group1";
         
-        waitTime = "1000";
+        waitTime = "10000";
 
         configure(zkUrl, groupId);
 
@@ -62,11 +85,15 @@ public class AvroConsumer {
 
         while ((next = getNextMessage()) != null) {
             try {
-                Schema _schema = new Schema.Parser().parse(new File("/tmp/message.avsc"));
+                Schema _schema = new Schema.Parser().parse(new File("/Users/kidio/message.avsc"));
                 DatumReader<GenericRecord> reader = new GenericDatumReader<GenericRecord>(_schema);
                 Decoder decoder = DecoderFactory.get().binaryDecoder(next, null);
                 GenericRecord result = reader.read(null, decoder);
-                System.out.println(result);
+
+                if (result.get("random").equals(topic.substring(7)))
+                    throw new Exception("wrong topic");
+                
+                
                 count ++;
             } catch (IOException e) {
                 e.printStackTrace();
@@ -126,4 +153,20 @@ public class AvroConsumer {
             return null;
         }
     }
+
+
+    @Override
+    public void run() {
+
+        try {
+            countMessage();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        System.out.println("--------------"+getCount());
+        total += getCount();
+
+    }
+    
+
 }

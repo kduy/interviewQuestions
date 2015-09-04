@@ -16,8 +16,6 @@
  */
 
 package com.nventdata.task.flink.performance;
-
-//import com.nventdata.task.flink.ex.AvroConsumer;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericDatumReader;
 import org.apache.avro.generic.GenericDatumWriter;
@@ -38,13 +36,17 @@ import org.json.JSONObject;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 public class FlinkKafkaTopology {
 
-    private static String host;
-    private static int port;
+
+    static final String AVRO_MSG_SCHEMA_FILE_PATH = "src/main/resources/message.avsc";
+
+
+    private static String zkhost;
+    private static String brokerList;
     private static String topic;
-    private static String schemaFilePath;
 
     public static void main(String[] args) throws Exception {
 
@@ -55,7 +57,7 @@ public class FlinkKafkaTopology {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.createLocalEnvironment().setParallelism(4);
 
         DataStream<String> kafkaStream = env
-                .addSource(new KafkaSource<String>(host + ":" + port, topic, new MySimpleStringSchema(schemaFilePath)));
+                .addSource(new KafkaSource<String>(zkhost, topic, new MySimpleStringSchema(AVRO_MSG_SCHEMA_FILE_PATH)));
 
         SplitDataStream<String> splitStream = kafkaStream.split(new OutputSelector<String>() {
             @Override
@@ -89,24 +91,39 @@ public class FlinkKafkaTopology {
     }
 
     private static void forwardToKafka(SplitDataStream<String> splitStream,String streamName, String topic) {
-        splitStream.select(streamName).addSink(new KafkaSink<String>(host + ":" + 9092, topic, new MySimpleStringSchema(schemaFilePath)));
+        splitStream.select(streamName).addSink(new KafkaSink<String>(brokerList, topic, new MySimpleStringSchema(AVRO_MSG_SCHEMA_FILE_PATH)));
     }
 
     private static boolean parseParameters(String[] args) {
-        if (args.length == 4) {
-            host = args[0];
-            port = Integer.parseInt(args[1]);
-            topic = args[2];
-            schemaFilePath = args[3];
+        if (args.length == 1) {
+            Properties properties = new Properties();
+            FileInputStream in = null;
+            try {
+                in = new FileInputStream(args[0]);
+                properties.load(in);
+                in.close();
+                zkhost = properties.getProperty("zookeeper.hosts");
+                brokerList = properties.getProperty("metadata.broker.list");
+                topic = properties.getProperty("kafka.topic");
+
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
             return true;
         } else {
-            System.err.println("Usage: FlinkKafkaTopology <host> <port> <topic>");
+            System.err.println("Usage: FlinkKafkaTopology <topology property file>");
             return false;
         }
     }
 }
 
-class MySimpleStringSchema implements SerializationSchema<String, byte[]> , DeserializationSchema<String>  {
+class MySimpleStringSchema implements SerializationSchema<String, byte[]>, DeserializationSchema<String> {
+
+    static final PerformanceCounter perfCounter = new PerformanceCounter("flink", 100, 100, 100, "flink");
+
 
     private String schemaStr;
     /*static final String schemaStr = "{" +
@@ -121,7 +138,6 @@ class MySimpleStringSchema implements SerializationSchema<String, byte[]> , Dese
             " }";
     */
     public MySimpleStringSchema (String schemaFilePath) {
-
 
         try {
             BufferedReader br = new BufferedReader(new FileReader(schemaFilePath));
@@ -145,7 +161,9 @@ class MySimpleStringSchema implements SerializationSchema<String, byte[]> , Dese
             Decoder decoder = DecoderFactory.get().binaryDecoder(message, null);
             GenericRecord result = reader.read(null, decoder);
 
-            return result.toString().trim();
+            perfCounter.count();
+            
+            return result.toString();
         } catch (IOException e) {
             e.printStackTrace();
         }
