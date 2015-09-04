@@ -19,14 +19,12 @@ package com.nventdata.task.flink.performance;
 
 //import com.nventdata.task.flink.ex.AvroConsumer;
 import org.apache.avro.Schema;
-import org.apache.avro.file.DataFileWriter;
 import org.apache.avro.generic.GenericDatumReader;
 import org.apache.avro.generic.GenericDatumWriter;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.avro.io.*;
 import org.apache.flink.api.common.typeinfo.BasicTypeInfo;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
-import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.streaming.api.collector.selector.OutputSelector;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.SplitDataStream;
@@ -46,8 +44,7 @@ public class FlinkKafkaTopology {
     private static String host;
     private static int port;
     private static String topic;
-    static final PerformanceCounter perfCounter = new PerformanceCounter("flink",100,100,100, "flink");
-
+    private static String schemaFilePath;
 
     public static void main(String[] args) throws Exception {
 
@@ -57,16 +54,13 @@ public class FlinkKafkaTopology {
 
         StreamExecutionEnvironment env = StreamExecutionEnvironment.createLocalEnvironment().setParallelism(4);
 
-
-
         DataStream<String> kafkaStream = env
-                .addSource(new KafkaSource<String>(host + ":" + port, topic, new MySimpleStringSchema()));
+                .addSource(new KafkaSource<String>(host + ":" + port, topic, new MySimpleStringSchema(schemaFilePath)));
 
         SplitDataStream<String> splitStream = kafkaStream.split(new OutputSelector<String>() {
-
-
             @Override
-            public Iterable<String> select(String value) {
+            public Iterable<
+                    String> select(String value) {
                 List<String> outputs = new ArrayList<String>();
                 JSONObject jsonObject = new JSONObject(value.trim());
                 int randomField = jsonObject.getInt("random");
@@ -95,14 +89,15 @@ public class FlinkKafkaTopology {
     }
 
     private static void forwardToKafka(SplitDataStream<String> splitStream,String streamName, String topic) {
-        splitStream.select(streamName).addSink(new KafkaSink<String>(host + ":" + 9092, topic, new MySimpleStringSchema()));
+        splitStream.select(streamName).addSink(new KafkaSink<String>(host + ":" + 9092, topic, new MySimpleStringSchema(schemaFilePath)));
     }
 
     private static boolean parseParameters(String[] args) {
-        if (args.length == 3) {
+        if (args.length == 4) {
             host = args[0];
             port = Integer.parseInt(args[1]);
             topic = args[2];
+            schemaFilePath = args[3];
             return true;
         } else {
             System.err.println("Usage: FlinkKafkaTopology <host> <port> <topic>");
@@ -113,14 +108,44 @@ public class FlinkKafkaTopology {
 
 class MySimpleStringSchema implements SerializationSchema<String, byte[]> , DeserializationSchema<String>  {
 
+    private String schemaStr;
+    /*static final String schemaStr = "{" +
+            " \"name\": \"kafkatest\"," +
+            " \"namespace\": \"test\"," +
+            " \"type\": \"record\"," +
+            " \"fields\": [" +
+            " {\"name\": \"id\", \"type\": \"int\"}," +
+            " {\"name\": \"random\", \"type\": \"int\"}," +
+            " {\"name\": \"data\", \"type\": \"string\"}" +
+            " ]" +
+            " }";
+    */
+    public MySimpleStringSchema (String schemaFilePath) {
+
+
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(schemaFilePath));
+            String line ;
+            StringBuilder sb = new StringBuilder();
+            while ((line = br.readLine())!=null){
+                sb.append(line);
+            }
+            schemaStr = sb.toString();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
     @Override
     public String deserialize(byte[] message) {
         try {
-            Schema _schema = new Schema.Parser().parse(new File("/Users/kidio/message.avsc"));
+            Schema _schema = new Schema.Parser().parse(schemaStr);
             DatumReader<GenericRecord> reader = new GenericDatumReader<GenericRecord>(_schema);
             Decoder decoder = DecoderFactory.get().binaryDecoder(message, null);
             GenericRecord result = reader.read(null, decoder);
-            return result.toString();
+
+            return result.toString().trim();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -136,10 +161,7 @@ class MySimpleStringSchema implements SerializationSchema<String, byte[]> , Dese
     public byte[] serialize(String element) {
         //return  element.getBytes();
         try {
-            
-            FlinkKafkaTopology.perfCounter.count();
-            return jsonToAvro(element, "/Users/kidio/message.avsc");
-            
+            return jsonToAvro(element, schemaStr);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -150,13 +172,13 @@ class MySimpleStringSchema implements SerializationSchema<String, byte[]> , Dese
         return BasicTypeInfo.STRING_TYPE_INFO;
     }
 
-    public static byte[] jsonToAvro(String json, String filePath) throws IOException {
+    public static byte[] jsonToAvro(String json, String schemaStr) throws IOException {
         InputStream input = null;
         GenericDatumWriter<GenericRecord> writer = null;
         Encoder encoder = null;
         ByteArrayOutputStream output = null;
         try {
-            Schema schema = new Schema.Parser().parse(new File(filePath));
+            Schema schema = new Schema.Parser().parse(schemaStr);
             DatumReader<GenericRecord> reader = new GenericDatumReader<GenericRecord>(schema);
             input = new ByteArrayInputStream(json.getBytes());
             output = new ByteArrayOutputStream();
