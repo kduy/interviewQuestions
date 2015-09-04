@@ -107,15 +107,16 @@ public class FlinkKafkaTopology {
 }
 
 class MySimpleStringSchema implements SerializationSchema<String, byte[]> , DeserializationSchema<String>  {
+    
 
     @Override
     public String deserialize(byte[] message) {
         try {
-            Schema _schema = new Schema.Parser().parse(new File("/tmp/message.avsc"));
+            Schema _schema = new Schema.Parser().parse(new File("/Users/kidio/message.avsc"));
             DatumReader<GenericRecord> reader = new GenericDatumReader<GenericRecord>(_schema);
             Decoder decoder = DecoderFactory.get().binaryDecoder(message, null);
             GenericRecord result = reader.read(null, decoder);
-            return result.toString();
+            return result.toString().trim();
         } catch (IOException e) {
             e.printStackTrace();
         }
