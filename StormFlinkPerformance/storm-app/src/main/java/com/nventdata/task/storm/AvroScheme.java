@@ -1,8 +1,6 @@
 package com.nventdata.task.storm;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.util.List;
 
 import org.apache.avro.Schema;
@@ -20,15 +18,22 @@ import backtype.storm.tuple.Values;
 public class AvroScheme implements Scheme {
 	
 	public static final String AVRO_SCHEME_KEY = "avro";
+    private String avroMessageSchema ;
+
+    public AvroScheme (String schema) {
+
+        avroMessageSchema = schema ;
+
+    }
 
 	@Override
 	public List<Object> deserialize(byte[] ser) {
 		return new Values(deserializeAvro(ser));
 	}
 	
-	public static String deserializeAvro(byte[] avroMsg) {
+	public  String deserializeAvro(byte[] avroMsg) {
 		try {
-			Schema _schema = new Schema.Parser().parse(new File ("src/main/resources/message.avsc"));
+			Schema _schema = new Schema.Parser().parse(avroMessageSchema);
 			DatumReader<GenericRecord> reader = new GenericDatumReader<GenericRecord>(_schema);
 			Decoder decoder = DecoderFactory.get().binaryDecoder(avroMsg, null);
             GenericRecord result = reader.read(null, decoder);

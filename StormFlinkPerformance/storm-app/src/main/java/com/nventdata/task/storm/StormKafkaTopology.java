@@ -1,49 +1,27 @@
 package com.nventdata.task.storm;
 
-import java.io.File;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.util.Map;
 import java.util.Properties;
 
-import org.apache.avro.Schema;
-import org.apache.avro.generic.GenericDatumReader;
-import org.apache.avro.generic.GenericRecord;
-import org.apache.avro.io.DatumReader;
-import org.apache.avro.io.Decoder;
-import org.apache.avro.io.DecoderFactory;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import storm.kafka.BrokerHosts;
 import storm.kafka.KafkaSpout;
 import storm.kafka.SpoutConfig;
-import storm.kafka.StringScheme;
 import storm.kafka.ZkHosts;
 import storm.kafka.bolt.KafkaBolt;
 import storm.kafka.bolt.mapper.FieldNameBasedTupleToKafkaMapper;
 import storm.kafka.bolt.selector.DefaultTopicSelector;
-import backtype.storm.Config;
 import backtype.storm.LocalCluster;
-import backtype.storm.tuple.TupleImpl;
 import backtype.storm.StormSubmitter;
 import backtype.storm.generated.StormTopology;
 import backtype.storm.spout.SchemeAsMultiScheme;
-import backtype.storm.task.OutputCollector;
-import backtype.storm.task.TopologyContext;
-import backtype.storm.topology.BasicOutputCollector;
-import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.topology.TopologyBuilder;
-import backtype.storm.topology.base.BaseBasicBolt;
-import backtype.storm.topology.base.BaseRichBolt;
-import backtype.storm.tuple.Fields;
-import backtype.storm.tuple.Tuple;
-import backtype.storm.tuple.Values;
-import kafka.message.Message;
-
-import org.apache.commons.codec.binary.Hex;
-
-import com.nventdata.task.storm.bolt.DecodeAvroBolt;
 import com.nventdata.task.storm.bolt.SplitStreamBolt;
 import com.nventdata.task.storm.utils.TopologyProperties;
 
@@ -60,8 +38,10 @@ public class StormKafkaTopology {
 			.getLogger(StormKafkaTopology.class);
 
 	private final TopologyProperties topologyProperties;
-	
-	public StormKafkaTopology(TopologyProperties topologyProperties) {
+    static final String AVRO_MSG_SCHEMA_FILE_PATH = "src/main/resources/message.avsc";
+
+
+    public StormKafkaTopology(TopologyProperties topologyProperties) {
 		this.topologyProperties = topologyProperties;
 	}
 	
@@ -84,7 +64,7 @@ public class StormKafkaTopology {
 				LocalCluster cluster = new LocalCluster();
 				
 				Properties props = new Properties();
-	            props.put("metadata.broker.list", "192.168.99.100:9092");
+	            props.put("metadata.broker.list", topologyProperties.getKafkaBrokerList());
 	            props.put("request.required.acks", "1");
 	            props.put("serializer.class", "kafka.serializer.DefaultEncoder");
 				topologyProperties.getStormConfig().put(KafkaBolt.KAFKA_BROKER_PROPERTIES,props);
@@ -92,7 +72,6 @@ public class StormKafkaTopology {
 				cluster.submitTopology(topologyProperties.getTopologyName(), topologyProperties.getStormConfig(), stormTopology);
 		}	
 	}
-	
 
 	/**
 	 * 	build the topology
@@ -109,13 +88,13 @@ public class StormKafkaTopology {
 		SpoutConfig kafkaConfig = new SpoutConfig(kafkaBrokerHosts, kafkaTopic, "", kafkaTopic);
 		kafkaConfig.startOffsetTime = kafka.api.OffsetRequest.LatestTime();
 		kafkaConfig.forceFromStart = topologyProperties.isKafkaStartFromBeginning();
-		kafkaConfig.scheme = new SchemeAsMultiScheme(new AvroScheme());
+		kafkaConfig.scheme = new SchemeAsMultiScheme(new AvroScheme(readAvroMessageSchema()));
 		
 		// build a Storm topology
 		TopologyBuilder builder = new TopologyBuilder();
 
 		builder.setSpout("avro", new KafkaSpout(kafkaConfig));//, topologyProperties.getKafkaSpoutParallelism());
-		builder.setBolt("split", new SplitStreamBolt()).shuffleGrouping("avro");
+		builder.setBolt("split", new SplitStreamBolt(readAvroMessageSchema())).shuffleGrouping("avro");
         
 		builder.setBolt("forwardToKafka1", createKafkaBoltWithTopic("random1")).shuffleGrouping("split", "random1");
         builder.setBolt("forwardToKafka2", createKafkaBoltWithTopic("random2")).shuffleGrouping("split", "random2");
@@ -123,6 +102,22 @@ public class StormKafkaTopology {
         
 		return builder.createTopology();
 	}
+    
+    private String readAvroMessageSchema() {
+
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(AVRO_MSG_SCHEMA_FILE_PATH));
+            String line;
+            StringBuilder sb = new StringBuilder();
+            while ((line = br.readLine()) != null) {
+                sb.append(line);
+            }
+            return  sb.toString();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
 	/**
 	 * create a bold to forward message to Kafka topic

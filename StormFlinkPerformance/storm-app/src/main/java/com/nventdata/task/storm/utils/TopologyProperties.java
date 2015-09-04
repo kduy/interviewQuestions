@@ -18,6 +18,7 @@ public class TopologyProperties {
 	private String zookeeperHosts;
 	private String stormExecutionMode;
 	private boolean kafkaStartFromBeginning;
+    private String kafkaBrokerList;
 	private String jsonFilter;
 
 	public TopologyProperties(String fileName){
@@ -44,11 +45,11 @@ public class TopologyProperties {
 		
 		Properties properties = readPropertiesFile(fileName);
 		topologyName = properties.getProperty("storm.topology.name","defaultTopologyName");
-		localTimeExecution = Integer.parseInt(properties.getProperty("storm.local.execution.time","20000"));
+		localTimeExecution = Integer.parseInt(properties.getProperty("storm.local.execution.time", "20000"));
 		kafkaSpoutParallelism = Integer.parseInt(properties.getProperty("kafka.spout.paralellism","1"));
 		filterBoltParallelism = Integer.parseInt(properties.getProperty("filter.bolt.paralellism","1"));
 		tcpBoltParallelism = Integer.parseInt(properties.getProperty("tcp.bolt.paralellism","1"));
-		
+		kafkaBrokerList = properties.getProperty("metadata.broker.list", "localhost:9092");
 		kafkaTopic = properties.getProperty("kafka.topic");
 		if (kafkaTopic == null)
 			throw new ConfigurationException("Kafka topic must be specified in topology properties file");
@@ -168,5 +169,13 @@ public class TopologyProperties {
 
 	public int getTcpBoltParallelism() {
 		return tcpBoltParallelism;
-	}	
+	}
+
+    public String getKafkaBrokerList() {
+        return kafkaBrokerList;
+    }
+
+    public void setKafkaBrokerList(String kafkaBrokerList) {
+        this.kafkaBrokerList = kafkaBrokerList;
+    }
 }

@@ -41,10 +41,13 @@ import java.util.List;
 
 public class FlinkKafkaTopology {
 
+
+    static final String AVRO_MSG_SCHEMA_FILE_PATH = "src/main/resources/message.avsc";
+
+    
     private static String host;
     private static int port;
     private static String topic;
-    private static String schemaFilePath;
 
     public static void main(String[] args) throws Exception {
 
@@ -55,7 +58,7 @@ public class FlinkKafkaTopology {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.createLocalEnvironment().setParallelism(4);
 
         DataStream<String> kafkaStream = env
-                .addSource(new KafkaSource<String>(host + ":" + port, topic, new MySimpleStringSchema(schemaFilePath)));
+                .addSource(new KafkaSource<String>(host + ":" + port, topic, new MySimpleStringSchema(AVRO_MSG_SCHEMA_FILE_PATH)));
 
         SplitDataStream<String> splitStream = kafkaStream.split(new OutputSelector<String>() {
             @Override
@@ -89,18 +92,17 @@ public class FlinkKafkaTopology {
     }
 
     private static void forwardToKafka(SplitDataStream<String> splitStream,String streamName, String topic) {
-        splitStream.select(streamName).addSink(new KafkaSink<String>(host + ":" + 9092, topic, new MySimpleStringSchema(schemaFilePath)));
+        splitStream.select(streamName).addSink(new KafkaSink<String>(host + ":" + 9092, topic, new MySimpleStringSchema(AVRO_MSG_SCHEMA_FILE_PATH)));
     }
 
     private static boolean parseParameters(String[] args) {
-        if (args.length == 4) {
+        if (args.length == 3) {
             host = args[0];
             port = Integer.parseInt(args[1]);
             topic = args[2];
-            schemaFilePath = args[3];
             return true;
         } else {
-            System.err.println("Usage: FlinkKafkaTopology <host> <port> <topic> <schema path>");
+            System.err.println("Usage: FlinkKafkaTopology <host> <port> <topic>");
             return false;
         }
     }

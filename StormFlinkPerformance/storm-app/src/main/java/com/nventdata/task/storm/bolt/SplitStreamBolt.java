@@ -38,6 +38,11 @@ import backtype.storm.tuple.Values;
 public class SplitStreamBolt extends BaseBasicBolt {
     
     PerformanceCounter perfCounter = new PerformanceCounter("storm", 100, 100, 100, "storm");
+    private String avroMessageSchema ;
+    
+    public SplitStreamBolt(String schema) {
+        avroMessageSchema = schema;
+    }
     
     @Override
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
@@ -64,7 +69,7 @@ public class SplitStreamBolt extends BaseBasicBolt {
         Encoder encoder = null;
         ByteArrayOutputStream output = null;
         try {
-            Schema schema = new Schema.Parser().parse(new File("src/main/resources/message.avsc"));
+            Schema schema = new Schema.Parser().parse(avroMessageSchema);
             DatumReader<GenericRecord> reader = new GenericDatumReader<GenericRecord>(schema);
             input = new ByteArrayInputStream(json.getBytes());
             output = new ByteArrayOutputStream();
