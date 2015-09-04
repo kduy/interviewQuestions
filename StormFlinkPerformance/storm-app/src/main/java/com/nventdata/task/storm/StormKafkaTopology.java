@@ -84,7 +84,7 @@ public class StormKafkaTopology {
 				LocalCluster cluster = new LocalCluster();
 				
 				Properties props = new Properties();
-	            props.put("metadata.broker.list", "localhost:9092");
+	            props.put("metadata.broker.list", "192.168.99.100:9092");
 	            props.put("request.required.acks", "1");
 	            props.put("serializer.class", "kafka.serializer.DefaultEncoder");
 				topologyProperties.getStormConfig().put(KafkaBolt.KAFKA_BROKER_PROPERTIES,props);
