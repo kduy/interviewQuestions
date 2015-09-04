@@ -38,6 +38,7 @@ import org.json.JSONObject;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 public class FlinkKafkaTopology {
 
@@ -45,8 +46,8 @@ public class FlinkKafkaTopology {
     static final String AVRO_MSG_SCHEMA_FILE_PATH = "src/main/resources/message.avsc";
 
     
-    private static String host;
-    private static int port;
+    private static String zkhost;
+    private static String brokerList;
     private static String topic;
 
     public static void main(String[] args) throws Exception {
@@ -55,10 +56,13 @@ public class FlinkKafkaTopology {
             return;
         }
 
+        
+        
+
         StreamExecutionEnvironment env = StreamExecutionEnvironment.createLocalEnvironment().setParallelism(4);
 
         DataStream<String> kafkaStream = env
-                .addSource(new KafkaSource<String>(host + ":" + port, topic, new MySimpleStringSchema(AVRO_MSG_SCHEMA_FILE_PATH)));
+                .addSource(new KafkaSource<String>(zkhost, topic, new MySimpleStringSchema(AVRO_MSG_SCHEMA_FILE_PATH)));
 
         SplitDataStream<String> splitStream = kafkaStream.split(new OutputSelector<String>() {
             @Override
@@ -92,17 +96,30 @@ public class FlinkKafkaTopology {
     }
 
     private static void forwardToKafka(SplitDataStream<String> splitStream,String streamName, String topic) {
-        splitStream.select(streamName).addSink(new KafkaSink<String>(host + ":" + 9092, topic, new MySimpleStringSchema(AVRO_MSG_SCHEMA_FILE_PATH)));
+        splitStream.select(streamName).addSink(new KafkaSink<String>(brokerList, topic, new MySimpleStringSchema(AVRO_MSG_SCHEMA_FILE_PATH)));
     }
 
     private static boolean parseParameters(String[] args) {
-        if (args.length == 3) {
-            host = args[0];
-            port = Integer.parseInt(args[1]);
-            topic = args[2];
+        if (args.length == 1) {
+            Properties properties = new Properties();
+            FileInputStream in = null;
+            try {
+                in = new FileInputStream(args[0]);
+                properties.load(in);
+                in.close();
+                zkhost = properties.getProperty("zookeeper.hosts");
+                brokerList = properties.getProperty("metadata.broker.list");
+                topic = properties.getProperty("kafka.topic");
+                
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
             return true;
         } else {
-            System.err.println("Usage: FlinkKafkaTopology <host> <port> <topic>");
+            System.err.println("Usage: FlinkKafkaTopology <topology property file>");
             return false;
         }
     }

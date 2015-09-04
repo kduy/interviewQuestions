@@ -131,8 +131,17 @@ public class StormKafkaTopology {
   				.withTupleToKafkaMapper( new FieldNameBasedTupleToKafkaMapper<String, byte[]>());
 	}
 	
+    
+    
 	public static void main(String[] args) throws Exception {
-		String propertiesFile = args[0];
+        String propertiesFile;
+        if (args.length == 1) {
+            propertiesFile = args[0];
+        } else {
+            System.err.println("Usage: StormKafkaTopology <Topology Property File>");
+            return;
+        }
+
 		TopologyProperties topologyProperties = new TopologyProperties(propertiesFile);
 		StormKafkaTopology topology = new StormKafkaTopology(topologyProperties);
 		topology.runTopology();

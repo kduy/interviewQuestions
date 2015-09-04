@@ -28,3 +28,24 @@ Build from source
 
 python KafkaGenerator.py -k 192.168.99.100:9092 -m 1
 ```
+
+
+
+
+# Run Main Program
+## flink 
+```bash
+mvn package
+
+java -cp target/flink-app-0.0.1-SNAPSHOT-jar-with-dependencies.jar com.nventdata.task.flink.FlinkKafkaTopology 192.168.99.100 2181 neverwinter /Users/kidio/message.avsc
+```
+
+## storm
+```bash
+mvn package
+
+java -cp target/storm-app-0.0.1-SNAPSHOT-jar-with-dependencies.jar com.nventdata.task.storm.StormKafkaTopology /Users/kidio/temp/interviewQuestions/StormFlinkPerformance/storm-app/storm-app.properties
+```
+
+
+
