@@ -122,8 +122,8 @@ public class FlinkKafkaTopology {
 
 class MySimpleStringSchema implements SerializationSchema<String, byte[]>, DeserializationSchema<String> {
 
-    static final PerformanceCounter perfCounter = new PerformanceCounter("flink", 100, 100, 100, "flink");
-
+    static final PerformanceCounter perfCounter = new PerformanceCounter("flink", 10, 10, 10, "flink");
+    static  final  Performance perf = new Performance("flink", 100, 1000, "flink");
 
     private String schemaStr;
     /*static final String schemaStr = "{" +
@@ -161,7 +161,9 @@ class MySimpleStringSchema implements SerializationSchema<String, byte[]>, Deser
             Decoder decoder = DecoderFactory.get().binaryDecoder(message, null);
             GenericRecord result = reader.read(null, decoder);
 
-            perfCounter.count();
+            /*perfCounter.count();
+            perfCounter.track(message.length);*/
+            perf.track(1, message.length);
             
             return result.toString();
         } catch (IOException e) {

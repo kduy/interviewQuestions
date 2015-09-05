@@ -77,6 +77,24 @@ public class PerformanceTracker implements Serializable{
 		this.firstWrite = true;
 	}
 
+    public void add(Long value, String label) {
+        long ctime = System.currentTimeMillis() - startTime;
+        values.add(value);
+        labels.add(label);
+        timeStamps.add(ctime);
+
+        if (dumpInterval > 0) {
+            if (ctime - lastDump > dumpInterval) {
+                writeCSV();
+                lastDump = ctime;
+                values.clear();
+                labels.clear();
+                timeStamps.clear();
+            }
+        }
+
+    }
+
 	public void track(Long value, String label) {
 		buffer = buffer + value;
 		intervalCounter++;
@@ -88,25 +106,6 @@ public class PerformanceTracker implements Serializable{
 			intervalCounter = 0;
 		}
 	}
-
-	public void add(Long value, String label) {
-		long ctime = System.currentTimeMillis() - startTime;
-		values.add(value);
-		labels.add(label);
-		timeStamps.add(ctime);
-
-		if (dumpInterval > 0) {
-			if (ctime - lastDump > dumpInterval) {
-				writeCSV();
-				lastDump = ctime;
-				values.clear();
-				labels.clear();
-				timeStamps.clear();
-			}
-		}
-
-	}
-
 	public void track(Long value) {
 		track(value, "tracker");
 	}

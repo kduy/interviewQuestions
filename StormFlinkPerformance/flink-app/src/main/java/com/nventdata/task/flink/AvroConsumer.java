@@ -55,7 +55,6 @@ public class AvroConsumer  implements Runnable{
             t1.join();
             t2.join();
             t3.join();
-            
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -85,7 +84,7 @@ public class AvroConsumer  implements Runnable{
 
         while ((next = getNextMessage()) != null) {
             try {
-                Schema _schema = new Schema.Parser().parse(new File("/Users/kidio/message.avsc"));
+                Schema _schema = new Schema.Parser().parse(new File("src/main/resources/message.avsc"));
                 DatumReader<GenericRecord> reader = new GenericDatumReader<GenericRecord>(_schema);
                 Decoder decoder = DecoderFactory.get().binaryDecoder(next, null);
                 GenericRecord result = reader.read(null, decoder);

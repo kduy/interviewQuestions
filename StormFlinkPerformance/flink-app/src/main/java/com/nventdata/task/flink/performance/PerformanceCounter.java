@@ -44,7 +44,6 @@ public class PerformanceCounter extends PerformanceTracker implements Serializab
 		long ctime = System.currentTimeMillis();
 		long dtime = ctime - lastAdd;
 		buffer = buffer + i;
-//		System.out.println("Counted!!! " + i);
 		if (dtime > interval) {
 			lastAdd = ctime - (ctime % interval);
 			add(buffer, label);
