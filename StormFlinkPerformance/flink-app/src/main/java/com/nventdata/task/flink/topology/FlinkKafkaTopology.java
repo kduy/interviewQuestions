@@ -14,11 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package com.nventdata.task.flink;
-
-//import com.nventdata.task.flink.ex.AvroConsumer;
-import com.nventdata.task.flink.performance.PerformanceCounter;
+package com.nventdata.task.flink.topology;
+import com.nventdata.task.flink.performance.Performance;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericDatumReader;
 import org.apache.avro.generic.GenericDatumWriter;
@@ -32,8 +29,6 @@ import org.apache.flink.streaming.api.datastream.SplitDataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.connectors.kafka.api.KafkaSink;
 import org.apache.flink.streaming.connectors.kafka.api.KafkaSource;
-import org.apache.flink.streaming.util.serialization.DeserializationSchema;
-import org.apache.flink.streaming.util.serialization.SerializationSchema;
 import org.json.JSONObject;
 
 import java.io.*;
@@ -46,7 +41,7 @@ public class FlinkKafkaTopology {
 
     static final String AVRO_MSG_SCHEMA_FILE_PATH = "src/main/resources/message.avsc";
 
-    
+
     private static String zkhost;
     private static String brokerList;
     private static String topic;
@@ -57,18 +52,15 @@ public class FlinkKafkaTopology {
             return;
         }
 
-        
-        
-
         StreamExecutionEnvironment env = StreamExecutionEnvironment.createLocalEnvironment().setParallelism(4);
 
         DataStream<String> kafkaStream = env
-                .addSource(new KafkaSource<String>(zkhost, topic, new MySimpleStringSchema(AVRO_MSG_SCHEMA_FILE_PATH)));
+                .addSource(new KafkaSource<String>(zkhost, topic, new AvroSerializationSchema(AVRO_MSG_SCHEMA_FILE_PATH)));
 
         SplitDataStream<String> splitStream = kafkaStream.split(new OutputSelector<String>() {
             @Override
             public Iterable<
-            String> select(String value) {
+                    String> select(String value) {
                 List<String> outputs = new ArrayList<String>();
                 JSONObject jsonObject = new JSONObject(value.trim());
                 int randomField = jsonObject.getInt("random");
@@ -97,7 +89,7 @@ public class FlinkKafkaTopology {
     }
 
     private static void forwardToKafka(SplitDataStream<String> splitStream,String streamName, String topic) {
-        splitStream.select(streamName).addSink(new KafkaSink<String>(brokerList, topic, new MySimpleStringSchema(AVRO_MSG_SCHEMA_FILE_PATH)));
+        splitStream.select(streamName).addSink(new KafkaSink<String>(brokerList, topic, new AvroSerializationSchema(AVRO_MSG_SCHEMA_FILE_PATH)));
     }
 
     private static boolean parseParameters(String[] args) {
@@ -111,7 +103,7 @@ public class FlinkKafkaTopology {
                 zkhost = properties.getProperty("zookeeper.hosts");
                 brokerList = properties.getProperty("metadata.broker.list");
                 topic = properties.getProperty("kafka.topic");
-                
+
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -122,107 +114,6 @@ public class FlinkKafkaTopology {
         } else {
             System.err.println("Usage: FlinkKafkaTopology <topology property file>");
             return false;
-        }
-    }
-}
-
-class MySimpleStringSchema implements SerializationSchema<String, byte[]> , DeserializationSchema<String>  {
-
-    PerformanceCounter perfCounter = new PerformanceCounter("flink", 100, 100, 100, "flink");
-
-
-    private String schemaStr;
-    /*static final String schemaStr = "{" +
-            " \"name\": \"kafkatest\"," +
-            " \"namespace\": \"test\"," +
-            " \"type\": \"record\"," +
-            " \"fields\": [" +
-            " {\"name\": \"id\", \"type\": \"int\"}," +
-            " {\"name\": \"random\", \"type\": \"int\"}," +
-            " {\"name\": \"data\", \"type\": \"string\"}" +
-            " ]" +
-            " }";
-    */
-    public MySimpleStringSchema (String schemaFilePath) {
-
-        
-        try {
-            BufferedReader br = new BufferedReader(new FileReader(schemaFilePath));
-            String line ;
-            StringBuilder sb = new StringBuilder();
-            while ((line = br.readLine())!=null){
-                sb.append(line);
-            }
-            schemaStr = sb.toString();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-    }
-    
-    @Override
-    public String deserialize(byte[] message) {
-        try {
-            Schema _schema = new Schema.Parser().parse(schemaStr);
-            DatumReader<GenericRecord> reader = new GenericDatumReader<GenericRecord>(_schema);
-            Decoder decoder = DecoderFactory.get().binaryDecoder(message, null);
-            GenericRecord result = reader.read(null, decoder);
-            
-            perfCounter.count();
-
-            return result.toString();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return new String(message);
-    }
-
-    @Override
-    public boolean isEndOfStream(String nextElement) {
-        return false;
-    }
-
-    @Override
-    public byte[] serialize(String element) {
-        try {
-            return jsonToAvro(element, schemaStr);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return element.getBytes();
-    }
-
-    public TypeInformation<String> getProducedType (){
-        return BasicTypeInfo.STRING_TYPE_INFO;
-    }
-
-    public static byte[] jsonToAvro(String json, String schemaStr) throws IOException {
-        InputStream input = null;
-        GenericDatumWriter<GenericRecord> writer = null;
-        Encoder encoder = null;
-        ByteArrayOutputStream output = null;
-        try {
-            Schema schema = new Schema.Parser().parse(schemaStr);
-            DatumReader<GenericRecord> reader = new GenericDatumReader<GenericRecord>(schema);
-            input = new ByteArrayInputStream(json.getBytes());
-            output = new ByteArrayOutputStream();
-            DataInputStream din = new DataInputStream(input);
-            writer = new GenericDatumWriter<GenericRecord>(schema);
-            Decoder decoder = DecoderFactory.get().jsonDecoder(schema, din);
-            encoder = EncoderFactory.get().binaryEncoder(output, null);
-            GenericRecord datum;
-            while (true) {
-                try {
-                    datum = reader.read(null, decoder);
-                } catch (EOFException eofe) {
-                    break;
-                }
-                writer.write(datum, encoder);
-            }
-            encoder.flush();
-            return output.toByteArray();
-        } finally {
-            try { input.close(); } catch (Exception e) { }
         }
     }
 }

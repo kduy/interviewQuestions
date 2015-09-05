@@ -3,6 +3,7 @@ package com.nventdata.task.storm;
 import java.io.*;
 import java.util.List;
 
+import com.nventdata.task.storm.performance.Performance;
 import com.nventdata.task.storm.performance.PerformanceCounter;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericDatumReader;
@@ -20,7 +21,8 @@ public class AvroScheme implements Scheme {
 	
 	public static final String AVRO_SCHEME_KEY = "avro";
     private String avroMessageSchema ;
-    PerformanceCounter perfCounter = new PerformanceCounter("storm", 100, 100, 100, "storm");
+    //PerformanceCounter perfCounter = new PerformanceCounter("storm", 100, 100, 100, "storm");
+    static  final Performance perf = new Performance("flink", 100, 1000, "flink");
 
 
     public AvroScheme (String schema) {
@@ -41,7 +43,8 @@ public class AvroScheme implements Scheme {
 			Decoder decoder = DecoderFactory.get().binaryDecoder(avroMsg, null);
             GenericRecord result = reader.read(null, decoder);
             
-            perfCounter.count();
+            //perfCounter.count();
+            perf.track(1, avroMsg.length);
             
             return result.toString();
 		} catch (IOException e) {

@@ -1,5 +1,5 @@
 
-package com.nventdata.task.flink;
+package com.nventdata.task.flink.verification;
 
 
         import kafka.consumer.*;
@@ -12,7 +12,6 @@ package com.nventdata.task.flink;
         import org.apache.avro.io.DatumReader;
         import org.apache.avro.io.Decoder;
         import org.apache.avro.io.DecoderFactory;
-        import org.json.JSONObject;
         import org.slf4j.Logger;
         import org.slf4j.LoggerFactory;
 
@@ -32,6 +31,8 @@ public class AvroConsumer  implements Runnable{
     private String waitTime;
     private int count;
     private String topic;
+    private  Schema _schema ;
+
 
 
     public static int total = 0;
@@ -41,6 +42,11 @@ public class AvroConsumer  implements Runnable{
         
         this.topic = topic;
         count = 0;
+        try {
+            _schema = new Schema.Parser().parse(new File("src/main/resources/message.avsc"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
     
     public static void main (String [] args){
@@ -84,7 +90,6 @@ public class AvroConsumer  implements Runnable{
 
         while ((next = getNextMessage()) != null) {
             try {
-                Schema _schema = new Schema.Parser().parse(new File("src/main/resources/message.avsc"));
                 DatumReader<GenericRecord> reader = new GenericDatumReader<GenericRecord>(_schema);
                 Decoder decoder = DecoderFactory.get().binaryDecoder(next, null);
                 GenericRecord result = reader.read(null, decoder);
@@ -164,7 +169,6 @@ public class AvroConsumer  implements Runnable{
         }
         System.out.println("--------------"+getCount());
         total += getCount();
-
     }
     
 

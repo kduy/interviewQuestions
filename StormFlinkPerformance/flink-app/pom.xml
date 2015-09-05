@@ -188,7 +188,7 @@ under the License.
 		    		</descriptorRefs>
 		    		<archive>
 		    			<manifest>
-		    				<mainClass>com.nventdata.task.flink.FlinkKafkaTopology</mainClass>
+		    				<mainClass>com.nventdata.task.flink.topology.FlinkKafkaTopology</mainClass>
 		    			</manifest>
 		    		</archive>
 		    	</configuration>
@@ -211,7 +211,7 @@ under the License.
 				<configuration>
 					<archive>
 						<manifestEntries>
-							<Main-Class>com.nventdata.task.flink.FlinkKafkaTopology</Main-Class>
+							<Main-Class>com.nventdata.task.flink.topology.FlinkKafkaTopology</Main-Class>
 						</manifestEntries>
 					</archive>
 				</configuration>

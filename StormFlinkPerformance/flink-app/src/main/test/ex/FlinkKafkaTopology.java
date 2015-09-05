@@ -14,8 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package com.nventdata.task.flink.performance;
+package ex;
+import com.nventdata.task.flink.performance.Performance;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericDatumReader;
 import org.apache.avro.generic.GenericDatumWriter;
@@ -122,8 +122,7 @@ public class FlinkKafkaTopology {
 
 class MySimpleStringSchema implements SerializationSchema<String, byte[]>, DeserializationSchema<String> {
 
-    static final PerformanceCounter perfCounter = new PerformanceCounter("flink", 10, 10, 10, "flink");
-    static  final  Performance perf = new Performance("flink", 100, 1000, "flink");
+    static  final Performance perf = new Performance("flink", 100, 1000, "flink");
 
     private String schemaStr;
     /*static final String schemaStr = "{" +
@@ -161,8 +160,6 @@ class MySimpleStringSchema implements SerializationSchema<String, byte[]>, Deser
             Decoder decoder = DecoderFactory.get().binaryDecoder(message, null);
             GenericRecord result = reader.read(null, decoder);
 
-            /*perfCounter.count();
-            perfCounter.track(message.length);*/
             perf.track(1, message.length);
             
             return result.toString();
