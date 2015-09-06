@@ -34,8 +34,7 @@ import backtype.storm.tuple.Values;
  *
  */
 public class SplitStreamBolt extends BaseBasicBolt {
-    
-    //PerformanceCounter perfCounter = new PerformanceCounter("storm", 100, 100, 100, "storm");
+
     private String avroMessageSchema ;
     
     public SplitStreamBolt(String schema) {
@@ -51,12 +50,10 @@ public class SplitStreamBolt extends BaseBasicBolt {
 
     @Override
     public void execute(Tuple tuple, BasicOutputCollector collector) {
-    	//System.out.println(tuple.getStringByField("avro"));
     	JSONObject jsonObject = new JSONObject(tuple.getStringByField("avro"));
         String randomField = "random"+ jsonObject.getInt("random");
 
         String json = tuple.getStringByField("avro");
-        //perfCounter.count();
     	collector.emit (randomField, new Values(randomField,jsonToAvro(json)));
     }
 

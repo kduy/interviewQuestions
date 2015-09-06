@@ -30,6 +30,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+/**
+ * @author pablo
+ *
+ * The main class to split an avro message stream from kafka source,
+ * split based on the `random` field then feed the split stream to kafka sink
+ */
+
 public class FlinkKafkaTopology {
 
     public static Logger LOG = LoggerFactory.getLogger(FlinkKafkaTopology.class);

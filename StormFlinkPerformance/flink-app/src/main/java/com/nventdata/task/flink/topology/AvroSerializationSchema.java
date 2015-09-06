@@ -11,12 +11,12 @@ import org.apache.flink.api.common.typeinfo.BasicTypeInfo;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.streaming.util.serialization.DeserializationSchema;
 import org.apache.flink.streaming.util.serialization.SerializationSchema;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.*;
 import java.util.Properties;
 
+/**
+ * * Serialize/Deserialize messages btw json and avro format
+ */
 public  class AvroSerializationSchema implements SerializationSchema<String, byte[]>, DeserializationSchema<String> {
     
     final Performance perf;

@@ -2,6 +2,7 @@ package com.nventdata.task.storm;
 
 import java.io.*;
 import java.util.List;
+import java.util.Properties;
 
 import com.nventdata.task.storm.performance.Performance;
 import org.apache.avro.Schema;
@@ -19,11 +20,11 @@ public class AvroScheme implements Scheme {
 	
 	public static final String AVRO_SCHEME_KEY = "avro";
     private String avroMessageSchema ;
-    //PerformanceCounter perfCounter = new PerformanceCounter("storm", 100, 100, 100, "storm");
-    static  final Performance perf = new Performance("flink", 100, 1000, "flink");
+
+    static  final Performance perf = new Performance("storm", 100, 1000, "/tmp/metrics");
 
 
-    public AvroScheme (String schema) {
+    public AvroScheme ( String schema) {
 
         avroMessageSchema = schema ;
 
@@ -36,12 +37,11 @@ public class AvroScheme implements Scheme {
 	
 	public  String deserializeAvro(byte[] avroMsg) {
 		try {
-			Schema _schema = new Schema.Parser().parse(avroMessageSchema);
-			DatumReader<GenericRecord> reader = new GenericDatumReader<GenericRecord>(_schema);
+			Schema schema = new Schema.Parser().parse(avroMessageSchema);
+			DatumReader<GenericRecord> reader = new GenericDatumReader<GenericRecord>(schema);
 			Decoder decoder = DecoderFactory.get().binaryDecoder(avroMsg, null);
             GenericRecord result = reader.read(null, decoder);
-            
-            //perfCounter.count();
+
             perf.track(1, avroMsg.length);
             
             return result.toString();
