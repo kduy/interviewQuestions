@@ -1,10 +1,12 @@
-package com.nventdata.task.storm;
+package com.nventdata.task.storm.topology;
 
 import java.io.*;
 import java.util.List;
 import java.util.Properties;
 
+import backtype.storm.Config;
 import com.nventdata.task.storm.performance.Performance;
+import com.nventdata.task.storm.utils.TopologyProperties;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericDatumReader;
 import org.apache.avro.generic.GenericRecord;
@@ -21,13 +23,17 @@ public class AvroScheme implements Scheme {
 	public static final String AVRO_SCHEME_KEY = "avro";
     private String avroMessageSchema ;
 
-    static  final Performance perf = new Performance("storm", 100, 1000, "/tmp/metrics");
+    final Performance perf;
 
-
-    public AvroScheme ( String schema) {
-
+    public AvroScheme ( TopologyProperties properties, String schema) {
         avroMessageSchema = schema ;
-
+        Config config = properties.getStormConfig();
+        perf = new Performance(
+                (String)config.getOrDefault("performance.name", "app"),
+                Integer.parseInt((String)config.getOrDefault("performance.interval", "0")),
+                Integer.parseInt((String)config.getOrDefault("performance.dump.interval", "0")),
+                (String) config.getOrDefault("performance.dir.output", "./")
+        );
     }
 
 	@Override

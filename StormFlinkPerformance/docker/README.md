@@ -54,7 +54,7 @@ java -cp target/flink-app-0.0.1-SNAPSHOT-jar-with-dependencies.jar com.nventdata
 ```bash
 mvn package
 
-java -cp target/storm-app-0.0.1-SNAPSHOT-jar-with-dependencies.jar com.nventdata.task.storm.StormKafkaTopology /Users/kidio/temp/interviewQuestions/StormFlinkPerformance/storm-app/storm-app.properties
+java -cp target/storm-app-0.0.1-SNAPSHOT-jar-with-dependencies.jar com.nventdata.task.storm.topology.StormKafkaTopology /Users/kidio/temp/interviewQuestions/StormFlinkPerformance/storm-app/storm-app.properties
 ```
 
 

@@ -43,9 +43,9 @@ public class SplitStreamBolt extends BaseBasicBolt {
     
     @Override
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
-    	declarer.declareStream("random1", new Fields("random1", "message"));
-    	declarer.declareStream("random2", new Fields("random3", "message"));
-    	declarer.declareStream("random3", new Fields("random3", "message"));
+    	declarer.declareStream("random1", new Fields("random", "message"));
+    	declarer.declareStream("random2", new Fields("random", "message"));
+    	declarer.declareStream("random3", new Fields("random", "message"));
     }
 
     @Override
@@ -68,6 +68,7 @@ public class SplitStreamBolt extends BaseBasicBolt {
             input = new ByteArrayInputStream(json.getBytes());
             output = new ByteArrayOutputStream();
             DataInputStream din = new DataInputStream(input);
+
             writer = new GenericDatumWriter<GenericRecord>(schema);
             Decoder decoder = DecoderFactory.get().jsonDecoder(schema, din);
             encoder = EncoderFactory.get().binaryEncoder(output, null);
@@ -83,13 +84,10 @@ public class SplitStreamBolt extends BaseBasicBolt {
             encoder.flush();
             return output.toByteArray();
         } catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
             try { input.close(); } catch (Exception e) { }
         }
 		return json.getBytes();
-        
-    
 	}
 }

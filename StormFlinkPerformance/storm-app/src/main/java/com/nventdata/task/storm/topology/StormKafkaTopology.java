@@ -1,4 +1,4 @@
-package com.nventdata.task.storm;
+package com.nventdata.task.storm.topology;
 
 
 import java.io.BufferedReader;
@@ -88,7 +88,7 @@ public class StormKafkaTopology {
 		SpoutConfig kafkaConfig = new SpoutConfig(kafkaBrokerHosts, kafkaTopic, "", kafkaTopic);
 		kafkaConfig.startOffsetTime = kafka.api.OffsetRequest.LatestTime();
 		kafkaConfig.forceFromStart = topologyProperties.isKafkaStartFromBeginning();
-		kafkaConfig.scheme = new SchemeAsMultiScheme(new AvroScheme(readAvroMessageSchema()));
+		kafkaConfig.scheme = new SchemeAsMultiScheme(new AvroScheme(topologyProperties, readAvroMessageSchema()));
 		
 		// build a Storm topology
 		TopologyBuilder builder = new TopologyBuilder();
@@ -106,7 +106,8 @@ public class StormKafkaTopology {
     private String readAvroMessageSchema() {
 
         try {
-            BufferedReader br = new BufferedReader(new FileReader(AVRO_MSG_SCHEMA_FILE_PATH));
+            String filePath = (String)topologyProperties.getStormConfig().getOrDefault("avro.schema.filePath",AVRO_MSG_SCHEMA_FILE_PATH);
+            BufferedReader br = new BufferedReader(new FileReader(filePath));
             String line;
             StringBuilder sb = new StringBuilder();
             while ((line = br.readLine()) != null) {
@@ -130,8 +131,7 @@ public class StormKafkaTopology {
         		.withTopicSelector( new DefaultTopicSelector(kafkaTopic))
   				.withTupleToKafkaMapper( new FieldNameBasedTupleToKafkaMapper<String, byte[]>());
 	}
-	
-    
+
     
 	public static void main(String[] args) throws Exception {
         String propertiesFile;

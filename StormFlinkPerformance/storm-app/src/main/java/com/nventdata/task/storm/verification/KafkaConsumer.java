@@ -2,6 +2,7 @@
 package com.nventdata.task.storm.verification;
 
 import kafka.consumer.*;
+
 import kafka.javaapi.consumer.ConsumerConnector;
 import kafka.serializer.DefaultDecoder;
 import kafka.utils.VerifiableProperties;
