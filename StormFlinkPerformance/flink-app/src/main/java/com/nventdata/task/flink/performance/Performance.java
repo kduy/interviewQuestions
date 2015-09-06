@@ -1,38 +1,57 @@
 package com.nventdata.task.flink.performance;
 
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by kidio on 05/09/15.
+ * Measure performance metrics into csv file
  */
 public class Performance implements Serializable {
-    protected List<Long> timestamps;
-    protected List<Long> recordsVolList;
-    protected List<Long> numOfRecordsList;
 
-    protected long dumpInterval = 0;
-    protected long lastDump = 0;
-    protected String fname;
+    public static Logger LOG = LoggerFactory.getLogger(Performance.class);
+
+    /* name of application*/
+    private String name;
     
-    protected long startTime ;
+    /*store metrics into Lists*/
+    private List<Long> timestamps;
+    private List<Long> recordsVolList;
+    private List<Long> numOfRecordsList;
+
+    /*temporary store metrics*/
+    private long buffer ;
+    private long counter;
     
-    protected int interval;
-    protected String name;
+    /*save metrics every 'interval' */
+    private int interval;
     
-    protected long buffer ;
-    protected long counter;
-    protected boolean firstWrite;
-    
+    /* write stored metrics to file every 'dumpInterval'*/
+    private long dumpInterval = 0;
+
+    /*last moment at which metrics are written to file*/
+    private long lastDump = 0;
+
+    private String outputFolder;
+
+    /* start measuring the performance*/
+    private long startTime ;
+
+    /*last moment at which metrics are stored to Lists*/
     protected  long lastAdd ;
+    
+    private boolean firstWrite;
 
-    public Performance (String name , int interval , int dumpInterval, String fname){
+    public Performance (String name , int interval , int dumpInterval, String outputFolder){
         timestamps = new ArrayList<Long>();
         recordsVolList = new ArrayList<Long>();
         numOfRecordsList = new ArrayList<Long>();
         this.name = name;
-        this.fname = fname;
+        this.outputFolder = outputFolder;
         this.interval = interval;
         this.dumpInterval = dumpInterval;
         counter = 0;
@@ -43,8 +62,10 @@ public class Performance implements Serializable {
     }
 
     /**
-     * *   store measured data in list
-     *   if time exceed the dumpInterval, 
+     * * Store measured data in 3 lists of timestamp, 
+     *   number of records, and total volume of those records.
+     *   
+     *   If time exceed the dumpInterval,
      *   print out all the list to file
      *    
      * @param numOfRecords
@@ -58,8 +79,8 @@ public class Performance implements Serializable {
         timestamps.add(ctime);
         recordsVolList.add(recordsVolume);
         numOfRecordsList.add(numOfRecords);
-        
-        
+
+        // [optimal] write to file every 'dumpInterval'
         if (dumpInterval > 0) {
             if (ctime - lastDump > dumpInterval){
                 writeCSV();
@@ -68,39 +89,48 @@ public class Performance implements Serializable {
                 numOfRecordsList.clear();
                 recordsVolList.clear();
             }
-            
         } else {
             writeCSV();
         }
     }
-    
+
+    /**
+     * * Tracking new records
+     * 
+     * *  store metrics into Lists
+     * * 
+     * @param numOfNewRecords
+     * @param newRecordsVolume
+     */
     public void track (long numOfNewRecords, long newRecordsVolume){
         long ctime = System.currentTimeMillis();
         long dtime = ctime - lastAdd;
         buffer += newRecordsVolume;
         counter += numOfNewRecords;
         
+        // add metrics to Lists every 'interval'
         if (dtime > interval){
             lastAdd = ctime - (ctime % interval);
             add(counter, buffer, ctime);
         }
-        
-        
+
     }
 
     private void writeCSV() {
         try {
-            System.out.println("Writing " + this.hashCode() + " thread:" +  Thread.currentThread().getId() + " CSV to output: " + fname);
-            PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(fname + "_" + Thread.currentThread().getId() + ".csv", true)));
+            LOG.debug("Writing " + this.hashCode() + " thread:" +  Thread.currentThread().getId() + " CSV to output: " + outputFolder);
+            FileWriter fw = new FileWriter(outputFolder+ "/"+ name + "_" + Thread.currentThread().getId() + ".csv", true);
+            
+            PrintWriter out = new PrintWriter(new BufferedWriter(fw));
             out.print(toString());
+
             out.close();
         } catch (FileNotFoundException e) {
-            System.out.println("CSV output file not found: " + fname);
-
+            LOG.error("CSV output file not found: " + outputFolder);
+            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
-            
     }
     
     @Override
@@ -109,7 +139,7 @@ public class Performance implements Serializable {
 
         if (firstWrite) {
             firstWrite = false;
-            csv.append("Time," + "#Records, Size," + ",Label\n");
+            csv.append("Time,#Records,Volume "+"\n");
         }
 
         for (int i = 0; i < timestamps.size(); i++) {
@@ -118,7 +148,5 @@ public class Performance implements Serializable {
 
         return csv.toString();
     }
-
-
 
 }

@@ -11,13 +11,16 @@ import org.apache.flink.api.common.typeinfo.BasicTypeInfo;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.streaming.util.serialization.DeserializationSchema;
 import org.apache.flink.streaming.util.serialization.SerializationSchema;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.util.Properties;
 
 public  class AvroSerializationSchema implements SerializationSchema<String, byte[]>, DeserializationSchema<String> {
-
-    //static final PerformanceCounter perfCounter = new PerformanceCounter("flink", 10, 10, 10, "flink");
-    static  final Performance perf = new Performance("flink", 100, 1000, "flink");
+    
+    final Performance perf;
+    public static final String AVRO_MSG_SCHEMA_FILE_PATH = "src/main/resources/message.avsc";
 
     private String schemaStr;
     /*static final String schemaStr = "{" +
@@ -31,8 +34,19 @@ public  class AvroSerializationSchema implements SerializationSchema<String, byt
             " ]" +
             " }";
     */
-    public AvroSerializationSchema(String schemaFilePath) {
+    public AvroSerializationSchema(Properties properties, boolean measurePerformance ) {
 
+        if (measurePerformance) {
+            perf = new Performance(
+                    properties.getProperty("performance.name", "app"),
+                    Integer.parseInt(properties.getProperty("performance.interval", "0")),
+                    Integer.parseInt(properties.getProperty("performance.dump.interval", "0")),
+                    properties.getProperty("performance.dir.output", "./")
+            );
+        } else
+            perf = null;
+        
+        String schemaFilePath = properties.getProperty("avro.schema.filePath", AVRO_MSG_SCHEMA_FILE_PATH);
         try {
             BufferedReader br = new BufferedReader(new FileReader(schemaFilePath));
             String line ;
@@ -54,8 +68,9 @@ public  class AvroSerializationSchema implements SerializationSchema<String, byt
             DatumReader<GenericRecord> reader = new GenericDatumReader<GenericRecord>(_schema);
             Decoder decoder = DecoderFactory.get().binaryDecoder(message, null);
             GenericRecord result = reader.read(null, decoder);
-
-            perf.track(1, message.length);
+            
+            if (perf != null)
+                perf.track(1, message.length);
 
             return result.toString();
         } catch (IOException e) {
@@ -71,7 +86,6 @@ public  class AvroSerializationSchema implements SerializationSchema<String, byt
 
     @Override
     public byte[] serialize(String element) {
-        //return  element.getBytes();
         try {
             return jsonToAvro(element, schemaStr);
         } catch (IOException e) {
@@ -95,6 +109,7 @@ public  class AvroSerializationSchema implements SerializationSchema<String, byt
             input = new ByteArrayInputStream(json.getBytes());
             output = new ByteArrayOutputStream();
             DataInputStream din = new DataInputStream(input);
+            
             writer = new GenericDatumWriter<GenericRecord>(schema);
             Decoder decoder = DecoderFactory.get().jsonDecoder(schema, din);
             encoder = EncoderFactory.get().binaryEncoder(output, null);

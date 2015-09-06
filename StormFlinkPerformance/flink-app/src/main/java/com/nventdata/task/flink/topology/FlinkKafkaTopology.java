@@ -15,14 +15,6 @@
  * limitations under the License.
  */
 package com.nventdata.task.flink.topology;
-import com.nventdata.task.flink.performance.Performance;
-import org.apache.avro.Schema;
-import org.apache.avro.generic.GenericDatumReader;
-import org.apache.avro.generic.GenericDatumWriter;
-import org.apache.avro.generic.GenericRecord;
-import org.apache.avro.io.*;
-import org.apache.flink.api.common.typeinfo.BasicTypeInfo;
-import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.streaming.api.collector.selector.OutputSelector;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.SplitDataStream;
@@ -30,6 +22,8 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.connectors.kafka.api.KafkaSink;
 import org.apache.flink.streaming.connectors.kafka.api.KafkaSource;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -38,9 +32,8 @@ import java.util.Properties;
 
 public class FlinkKafkaTopology {
 
-
-    static final String AVRO_MSG_SCHEMA_FILE_PATH = "src/main/resources/message.avsc";
-
+    public static Logger LOG = LoggerFactory.getLogger(FlinkKafkaTopology.class);
+    public static final  Properties properties = new Properties();
 
     private static String zkhost;
     private static String brokerList;
@@ -55,7 +48,7 @@ public class FlinkKafkaTopology {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.createLocalEnvironment().setParallelism(4);
 
         DataStream<String> kafkaStream = env
-                .addSource(new KafkaSource<String>(zkhost, topic, new AvroSerializationSchema(AVRO_MSG_SCHEMA_FILE_PATH)));
+                .addSource(new KafkaSource<String>(zkhost, topic, new AvroSerializationSchema(FlinkKafkaTopology.properties, true)));
 
         SplitDataStream<String> splitStream = kafkaStream.split(new OutputSelector<String>() {
             @Override
@@ -89,12 +82,11 @@ public class FlinkKafkaTopology {
     }
 
     private static void forwardToKafka(SplitDataStream<String> splitStream,String streamName, String topic) {
-        splitStream.select(streamName).addSink(new KafkaSink<String>(brokerList, topic, new AvroSerializationSchema(AVRO_MSG_SCHEMA_FILE_PATH)));
+        splitStream.select(streamName).addSink(new KafkaSink<String>(brokerList, topic, new AvroSerializationSchema(properties, false)));
     }
 
     private static boolean parseParameters(String[] args) {
         if (args.length == 1) {
-            Properties properties = new Properties();
             FileInputStream in = null;
             try {
                 in = new FileInputStream(args[0]);
@@ -105,8 +97,10 @@ public class FlinkKafkaTopology {
                 topic = properties.getProperty("kafka.topic");
 
             } catch (FileNotFoundException e) {
+                LOG.error("File "+ args[0] + " is not found !");
                 e.printStackTrace();
             } catch (IOException e) {
+                LOG.error("Cannot load file "+ args[0]);
                 e.printStackTrace();
             }
 
