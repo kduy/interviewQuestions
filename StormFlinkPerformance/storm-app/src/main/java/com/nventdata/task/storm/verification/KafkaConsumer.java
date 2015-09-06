@@ -129,7 +129,7 @@ public class KafkaConsumer implements Runnable{
 
     /**
      * * Count number of received messages in the topic
-     * *
+     * * 
      * @throws Exception : when receiving a message of another topic
      */
     public  void countMessage() throws  Exception{
@@ -191,7 +191,7 @@ public class KafkaConsumer implements Runnable{
 
         DefaultDecoder decoder = new DefaultDecoder(new VerifiableProperties());
 
-        //one topic with a list of a single stream
+        //one topic with a list of a single stream 
         stream = consumer.createMessageStreams(topicCountMap, decoder, decoder).get(topic).get(0);
     }
 

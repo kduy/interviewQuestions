@@ -1,4 +1,4 @@
-package com.nventdata.task.flink.ex;
+package ex.ex;
 
 import junit.framework.Assert;
 import kafka.admin.AdminUtils;

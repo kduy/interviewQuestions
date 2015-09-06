@@ -1,4 +1,4 @@
-package com.nventdata.task.flink.ex;
+package ex.ex;
 
 //import JavaSessionize.avro.LogLine;
 import io.confluent.kafka.serializers.KafkaAvroDecoder;

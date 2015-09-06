@@ -1,4 +1,4 @@
-package com.nventdata.task.flink.ex.forunitest;
+package ex.ex.forunitest;
 
 import kafka.utils.Time;
 

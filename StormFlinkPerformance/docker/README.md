@@ -42,12 +42,12 @@ python KafkaGenerator.py -k 192.168.99.100:9092 -m 1
 ```bash
 mvn package
 
-java -cp target/flink-app-0.0.1-SNAPSHOT-jar-with-dependencies.jar com.nventdata.task.flink.FlinkKafkaTopology 192.168.99.100 2181 neverwinter /Users/kidio/message.avsc
+java -cp target/flink-app-0.0.1-SNAPSHOT-jar-with-dependencies.jar com.nventdata.task.flink.topology.FlinkKafkaTopology /Users/kidio/temp/interviewQuestions/StormFlinkPerformance/flink-app/flink-app.properties
 ```
 
 ### Verification
 ```bash
-    192.168.99.100:2181 random1,random2,random3 10000 1000
+    java -cp target/flink-app-0.0.1-SNAPSHOT-jar-with-dependencies.jar com.nventdata.task.flink.verification.KafkaConsumer 192.168.99.100:2181 random1,random2,random3 10000 1000
 ```
 
 ## storm
@@ -60,7 +60,7 @@ java -cp target/storm-app-0.0.1-SNAPSHOT-jar-with-dependencies.jar com.nventdata
 
 ### Verification
 ```bash
-    192.168.99.100:2181 random1,random2,random3 10000 1000
+    java -cp target/storm-app-0.0.1-SNAPSHOT-jar-with-dependencies.jar com.nventdata.task.storm.verification.KafkaConsumer 192.168.99.100:2181 random1,random2,random3 10000 1000
 ```
 
 

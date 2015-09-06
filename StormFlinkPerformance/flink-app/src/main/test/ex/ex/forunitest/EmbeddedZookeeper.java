@@ -1,4 +1,4 @@
-package com.nventdata.task.flink.ex.forunitest;
+package ex.ex.forunitest;
 
 import org.apache.zookeeper.server.NIOServerCnxnFactory;
 import org.apache.zookeeper.server.ServerCnxnFactory;
