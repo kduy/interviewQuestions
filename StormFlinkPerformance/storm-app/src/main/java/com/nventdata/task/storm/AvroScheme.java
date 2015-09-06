@@ -4,14 +4,12 @@ import java.io.*;
 import java.util.List;
 
 import com.nventdata.task.storm.performance.Performance;
-import com.nventdata.task.storm.performance.PerformanceCounter;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericDatumReader;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.avro.io.DatumReader;
 import org.apache.avro.io.Decoder;
 import org.apache.avro.io.DecoderFactory;
-import org.apache.commons.codec.binary.Hex;
 
 import backtype.storm.spout.Scheme;
 import backtype.storm.tuple.Fields;

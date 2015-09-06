@@ -27,7 +27,7 @@ public class KafkaConsumer implements Runnable{
     private ConsumerConnector consumer;
     private ConsumerConfig config;
     private KafkaStream<byte[], byte[]> stream;
-    private Schema _schema ;
+    private Schema schema;
 
     private String zkUrl;
     private String topic;
@@ -47,7 +47,7 @@ public class KafkaConsumer implements Runnable{
         count = 0;
         try {
             // schema of avro message is fixed in this context
-            _schema = new Schema.Parser().parse(new File("src/main/resources/message.avsc"));
+            schema = new Schema.Parser().parse(new File("src/main/resources/message.avsc"));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -146,7 +146,7 @@ public class KafkaConsumer implements Runnable{
         //  count received message and check "random" field
         while ((next = getNextMessage()) != null) {
             try {
-                DatumReader<GenericRecord> reader = new GenericDatumReader<GenericRecord>(_schema);
+                DatumReader<GenericRecord> reader = new GenericDatumReader<GenericRecord>(schema);
                 Decoder decoder = DecoderFactory.get().binaryDecoder(next, null);
                 GenericRecord result = reader.read(null, decoder);
 
