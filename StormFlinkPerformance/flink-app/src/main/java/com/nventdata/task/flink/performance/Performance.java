@@ -173,7 +173,7 @@ public class Performance implements Serializable {
             System.exit(1);
         }
 
-        try (
+        try(
                 BufferedReader br = new BufferedReader(new FileReader(filePath))
         ){
             String lastLine= "", tempLine = "";
@@ -203,7 +203,5 @@ public class Performance implements Serializable {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
-
 }
