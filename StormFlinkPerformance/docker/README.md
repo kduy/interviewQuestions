@@ -11,10 +11,15 @@ export KAFKA=192.168.99.100:9092
 $KAFKA_HOME/bin/kafka-console-producer.sh --broker-list $KAFKA --topic test
 ```
 
+
+Consumer 
 ```bash
 export ZOOKEEPER=192.168.99.100:2181
 $KAFKA_HOME/bin/kafka-console-consumer.sh --zookeeper $ZOOKEEPER --topic test
 ```
+
+
+
 
 Build from source
 ---
@@ -40,12 +45,25 @@ mvn package
 java -cp target/flink-app-0.0.1-SNAPSHOT-jar-with-dependencies.jar com.nventdata.task.flink.FlinkKafkaTopology 192.168.99.100 2181 neverwinter /Users/kidio/message.avsc
 ```
 
+### Verification
+```bash
+    192.168.99.100:2181 random1,random2,random3 10000 1000
+```
+
 ## storm
 ```bash
 mvn package
 
 java -cp target/storm-app-0.0.1-SNAPSHOT-jar-with-dependencies.jar com.nventdata.task.storm.StormKafkaTopology /Users/kidio/temp/interviewQuestions/StormFlinkPerformance/storm-app/storm-app.properties
 ```
+
+
+### Verification
+```bash
+    192.168.99.100:2181 random1,random2,random3 10000 1000
+```
+
+
 
 
 
