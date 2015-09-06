@@ -169,17 +169,15 @@ public class Performance implements Serializable {
         if (args.length > 0)
             filePath = args[0];
         else {
-            System.err.println("No metric file");
+            System.err.println("Usage: Performance <filePath>");
             System.exit(1);
         }
-        
 
-        
-        
         try (
             BufferedReader br = new BufferedReader(new FileReader(filePath))
         ){
             String lastLine= "", tempLine = "";
+            
             // header
             String[] header = br.readLine().split(",");
             
@@ -194,12 +192,11 @@ public class Performance implements Serializable {
             Map <String, Long > lastMetricRow = convertRowToMap(header,lastLine.split(","));
 
             long duration = (lastMetricRow.get(header[0]) - firstMetricRow.get(header[0]))/1000;
-            long x1 = lastMetricRow.get(header[1]) - firstMetricRow.get(header[1]);
-            long x2 = lastMetricRow.get(header[2]) - firstMetricRow.get(header[2]);
+            long numOfRecords = lastMetricRow.get(header[1]) - firstMetricRow.get(header[1]);
+            long volume = lastMetricRow.get(header[2]) - firstMetricRow.get(header[2]);
 
-            System.out.println(duration);
-            System.out.println(x1/duration);
-            System.out.println(x2/duration);
+            System.out.println("Thoughput in records/s: " + numOfRecords/duration);
+            System.out.println("Thoughput in bytes/s: " + volume / duration);
 
             
             
