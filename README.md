@@ -1,5 +1,5 @@
 
-#How To Run
+# HOW TO RUN
 ---
 
 # Download the repository
@@ -15,12 +15,9 @@ export PROJECT_HOME=$(pwd)
 ```bash
 #build
 docker build -t kafkadocker docker/kafka/
+
 #start
-docker run -p 2181:2181 -p 9092:9092 --env ADVERTISED_HOST=$DOCKER_IP --env ADVERTISED_PORT=9092 --env KAFKA_CREATE_TOPICS=neverwinter,random1,random2,random3 kafkadocker
-
-# create topic
-bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic test
-
+docker run -p 2181:2181 -p 9092:9092 --env ADVERTISED_HOST=$DOCKER_IP --env ADVERTISED_PORT=9092 kafkadocker
 ```
 
 # Programing Assigment
