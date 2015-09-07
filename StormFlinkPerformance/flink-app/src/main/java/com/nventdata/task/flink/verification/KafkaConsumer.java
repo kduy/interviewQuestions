@@ -102,7 +102,7 @@ public class KafkaConsumer implements Runnable{
         LOG.info("Total received messages in all topics: " + numOfReceivedMsg);
 
         if (numOfReceivedMsg == numOfExpectedMsg)
-            System.out.println("All "+ numOfExpectedMsg + " has received !");
+            System.out.println("All "+ numOfExpectedMsg + " has been received !");
         else {
             int missingMsg = (numOfExpectedMsg - numOfReceivedMsg);
             if (missingMsg > 0 )

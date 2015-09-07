@@ -1,5 +1,6 @@
 FROM ubuntu:trusty
 
+# Modified from spotify/kafka
 MAINTAINER pablo
 
 # Default to UTF-8 file.encoding

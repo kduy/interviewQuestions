@@ -8,11 +8,11 @@
 # * LOG_RETENTION_BYTES: configure the size at which segments are pruned from the log, (default is 1073741824, for 1GB)
 # * NUM_PARTITIONS: configure the default number of log partitions per topic
 
-# Configure advertised host/port if we run in helios
-if [ ! -z "$HELIOS_PORT_kafka" ]; then
-    ADVERTISED_HOST=`echo $HELIOS_PORT_kafka | cut -d':' -f 1 | xargs -n 1 dig +short | tail -n 1`
-    ADVERTISED_PORT=`echo $HELIOS_PORT_kafka | cut -d':' -f 2`
-fi
+# # Configure advertised host/port if we run in helios
+# if [ ! -z "$HELIOS_PORT_kafka" ]; then
+#     ADVERTISED_HOST=`echo $HELIOS_PORT_kafka | cut -d':' -f 1 | xargs -n 1 dig +short | tail -n 1`
+#     ADVERTISED_PORT=`echo $HELIOS_PORT_kafka | cut -d':' -f 2`
+# fi
 
 # Set the external host and port
 if [ ! -z "$ADVERTISED_HOST" ]; then
@@ -57,5 +57,24 @@ if [ ! -z "$NUM_PARTITIONS" ]; then
     sed -r -i "s/(num.partitions)=(.*)/\1=$NUM_PARTITIONS/g" $KAFKA_HOME/config/server.properties
 fi
 
+
+
 # Run Kafka
 $KAFKA_HOME/bin/kafka-server-start.sh $KAFKA_HOME/config/server.properties
+
+# # Create topics
+# $KAFKA_HOME/bin/kafka-topics.sh --create --zookeeper $ADVERTISED_HOST:2181 --replication-factor 1 --partitions 1 --topic neverwinter
+# $KAFKA_HOME/bin/kafka-topics.sh --create --zookeeper $ADVERTISED_HOST:2181 --replication-factor 1 --partitions 1 --topic random1
+# $KAFKA_HOME/bin/kafka-topics.sh --create --zookeeper $ADVERTISED_HOST:2181 --replication-factor 1 --partitions 1 --topic random2
+# $KAFKA_HOME/bin/kafka-topics.sh --create --zookeeper $ADVERTISED_HOST:2181 --replication-factor 1 --partitions 1 --topic random3
+
+
+# create topics
+
+# if [[ ! -z $KAFKA_CREATE_TOPICS ]]; then
+#     IFS=','; for topicToCreate in $KAFKA_CREATE_TOPICS; do
+#         echo "${topicToCreate}"
+#         $KAFKA_HOME/bin/kafka-topics.sh --create --zookeeper $ADVERTISED_HOST:2181 --replication-factor 1 --partition 1 --topic "${topicToCreate}"
+#     done
+# fi
+
