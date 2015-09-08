@@ -60,7 +60,10 @@ fi
 
 
 # Run Kafka
-$KAFKA_HOME/bin/kafka-server-start.sh $KAFKA_HOME/config/server.properties
+$KAFKA_HOME/bin/kafka-server-start.sh $KAFKA_HOME/config/server.properties &
+KAFKA_SERVER_PID=$!
+
+while netstat -lnt | awk '$4 ~ /:9092$/ {exit 1}'; do sleep 1; done
 
 # # Create topics
 # $KAFKA_HOME/bin/kafka-topics.sh --create --zookeeper $ADVERTISED_HOST:2181 --replication-factor 1 --partitions 1 --topic neverwinter
@@ -77,4 +80,7 @@ if [[ ! -z $KAFKA_CREATE_TOPICS ]]; then
         $KAFKA_HOME/bin/kafka-topics.sh --create --zookeeper $ADVERTISED_HOST:2181 --replication-factor 1 --partition 1 --topic "${topicToCreate}"
     done
 fi
+
+
+wait $KAFKA_SERVER_PID
 

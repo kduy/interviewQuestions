@@ -17,7 +17,7 @@ export PROJECT_HOME=$(pwd)
 docker build -t kafkadocker docker/kafka/
 
 #start
-docker run -p 2181:2181 -p 9092:9092 --env ADVERTISED_HOST=$DOCKER_IP --env ADVERTISED_PORT=9092 kafkadocker
+docker run -p 2181:2181 -p 9092:9092 --env ADVERTISED_HOST=$DOCKER_IP --env ADVERTISED_PORT=9092 --env KAFKA_CREATE_TOPICS=neverwinter,random1,random2,random3 kafkadocker &
 ```
 
 # Programing Assigment
